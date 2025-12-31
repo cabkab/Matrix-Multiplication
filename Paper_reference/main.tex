@@ -1,0 +1,133 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{fullpage}
+\usepackage{tgtermes}
+\usepackage[T1]{fontenc}
+\usepackage[colorlinks,citecolor=blue,linkcolor=blue,urlcolor=red]{hyperref}
+\usepackage{graphicx}
+\usepackage{amsfonts,amsmath,amsthm,amssymb,dsfont,mathtools,multirow}
+
+\mathtoolsset{centercolon}
+\usepackage{xfrac,nicefrac}
+\usepackage{mathdots}
+\usepackage{bm,bbm}
+\usepackage{url}
+\usepackage{caption}
+\usepackage{paralist}
+\usepackage{enumerate}
+\usepackage[normalem]{ulem}
+\usepackage{enumitem}
+\usepackage{xspace}
+\xspaceaddexceptions{]\}}
+\usepackage[capitalise]{cleveref}
+\crefname{algocf}{Algorithm}{Algorithms}
+\Crefname{algocf}{Algorithm}{Algorithms}
+\crefname{claim}{Claim}{Claims}
+\usepackage{tabu}
+\usepackage{framed}
+\usepackage{float,wrapfig}
+\usepackage{subfigure}
+\usepackage{soul}
+\usepackage[usenames,dvipsnames]{pstricks}
+\usepackage{thmtools, thm-restate}
+\usepackage[linesnumbered,boxed,ruled,vlined]{algorithm2e}
+\usepackage{algpseudocode}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{calc}
+\usepackage{regexpatch}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows.meta}
+
+\theoremstyle{plain}
+\newtheorem{prob}{Problem}
+\newtheorem{open}{Open Question}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{prop}[theorem]{Proposition}
+\newtheorem{cor}[theorem]{Corollary}
+\newtheorem{claim}[theorem]{Claim}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{property}[theorem]{Property}
+
+\newcommand{\highlight}[1]{\medskip\noindent\textbf{#1}}
+
+\newenvironment{proofof}[1]{\begin{proof}[Proof of #1]}{\end{proof}}
+\newenvironment{proofsketch}{\begin{proof}[Proof Sketch]}{\end{proof}}
+\newenvironment{proofsketchof}[1]{\begin{proof}[Proof Sketch of #1]}{\end{proof}}
+
+\newenvironment{reminder}[1]{\bigskip
+  \noindent {\bf Reminder of #1.  }\em}{\smallskip}
+
+\DeclarePairedDelimiter{\tvdbasic}{\lVert}{\rVert}
+\makeatletter
+\newcommand{\@tvdstar}[2]{\tvdbasic*{#1 - #2}_{\mathrm{TV}}}
+\newcommand{\@tvdnostar}[3][]{\tvdbasic[#1]{#2 - #3}_{\mathrm{TV}}}
+\newcommand{\tvd}{\@ifstar\@tvdstar\@tvdnostar}
+\makeatother
+
+\usepackage[breakable]{tcolorbox}
+
+\input{header}
+
+
+
+\interfootnotelinepenalty=10000
+
+\begin{document}
+
+\newcommand{\authorspace}{1cm}
+
+\author{
+  \hspace{\authorspace}
+  Josh Alman\thanks{Columbia University. \texttt{josh@cs.columbia.edu}. Supported in part by NSF Grant CCF-2238221 and a grant from the Simons Foundation (Grant Number 825870 JA).}
+  \and
+  Ran Duan\thanks{Institute for Interdisciplinary Information Sciences, Tsinghua University. \texttt{duanran@mail.tsinghua.edu.cn}.}
+  \and
+  Virginia Vassilevska Williams\thanks{Massachusetts Institute of Technology. \texttt{virgi@mit.edu}. Supported by NSF Grant CCF-2330048, BSF Grant 2020356 and a Simons Investigator Award. This work was done in part while the author was visiting the Simons Institute for the Theory of Computing.}
+  \hspace{\authorspace}
+  \and
+  \hspace{\authorspace}
+  Yinzhan Xu\thanks{Massachusetts Institute of Technology. \texttt{xyzhan@mit.edu}. Partially supported by NSF Grant CCF-2330048, BSF Grant 2020356 and a Simons Investigator Award. This work was done in part while the author was visiting the Simons Institute for the Theory of Computing.}
+  \and
+  Zixuan Xu\thanks{Massachusetts Institute of Technology. \texttt{zixuanxu@mit.edu}.}
+  \and
+  Renfei Zhou\thanks{Carnegie Mellon University. \texttt{renfeiz@andrew.cmu.edu}.}
+  \hspace{\authorspace}
+}
+\title{More Asymmetry Yields Faster Matrix Multiplication}
+\date{}
+\pagenumbering{gobble} 
+\maketitle
+
+\begin{abstract}
+We present a new improvement on the laser method for designing fast matrix multiplication algorithms. The new method further develops the recent advances by [Duan, Wu, Zhou FOCS 2023] and [Vassilevska Williams, Xu, Xu, Zhou SODA 2024]. Surprisingly the new improvement is achieved by incorporating more asymmetry in the analysis, circumventing a fundamental tool of prior work that requires two of the three dimensions to be treated identically. The method yields a new bound on the square matrix multiplication exponent
+$$\omega<2.371339,$$
+improved from the previous bound of $\omega<2.371552$. We also improve the bounds of the exponents for multiplying rectangular matrices of various shapes.
+\end{abstract}
+
+\newpage
+\pagenumbering{arabic}
+
+\input{intro}
+
+\input{overview}
+
+\input{prelim}
+
+\input{outline}
+
+\input{global}
+
+\input{constituent}
+
+\input{numerical}
+
+\bibliographystyle{alpha}
+\bibliography{ref}
+\end{document}

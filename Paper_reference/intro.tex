@@ -1,0 +1,28 @@
+\section{Introduction}
+Multiplication of matrices is a fundamental algebraic primitive with applications throughout computer science and beyond. The study of its algorithmic complexity has been a vibrant area in theoretical computer science and mathematics ever since Strassen's \cite{strassen} 1969 discovery that the {\em rank} of 2 by 2 matrix multiplication is $7$ (and not $8$), leading to the first truly subcubic, $O(n^{2.81})$-time algorithm for multiplying $n\times n$ matrices.
+Fifty-five years later, researchers are still attempting to lower the exponent $\omega$, defined as the smallest real number for which $n\times n$ matrices can be multiplied in $O(n^{\omega+\eps})$ time for all $\eps>0$.
+
+After many decades of work (e.g.~\cite{strassen,Pan78,BCRL79,Schonhage81,Romani82,cw81as,laser,cw90,stothers,virgi12,LeGall32power,AlmanW21,duan2023,VXXZ24}), 
+the current best bound $\omega<2.371552$ was given by \cite{VXXZ24} optimizing a recent approach by Duan, Wu, and Zhou \cite{duan2023}.
+
+There is a straightforward lower bound of $\omega\geq 2$ since the output size is $n^2$. 
+No larger lower bound is known, leading many to optimistically conjecture that $\omega=2$.
+Unfortunately, several papers \cite{ambainis,blasiak2017groups,blasiak2017cap,almanitcs,Alman21,aw2,ChristandlVZ21} prove significant limitations to all known approaches for designing matrix multiplication algorithms. The most general limitations \cite{Alman21,aw2,ChristandlVZ21} say that even major generalizations of the known approaches cannot prove $\omega=2$. The most restricted limitation~\cite{ambainis} focuses on the {\em laser method} defined by Strassen \cite{laser} and applied to the powers of a very particular tensor $\CW_5$ defined by Coppersmith and Winograd \cite{cw90}. This is the method that {\em all} the best results\footnote{Coppersmith and Winograd's paper \cite{cw90} technically used $\CW_6$ instead of $\CW_5$, but the limitation of \cite{ambainis} on $\CW_6$ is actually worse than those for $\CW_5$.} from the last 38 years have used. The limitation says that the laser method on $\CW_5$ cannot prove that $\omega<2.3078$. All papers on matrix multiplication algorithms from the last 10 years or so have been focused on bringing the $\omega$ upper bound closer to this $2.3078$ lower bound.
+
+
+
+The main contribution of this paper is a new improvement over the laser method when applied to the powers of $\CW_5$. The new method builds upon work of \cite{duan2023} and \cite{VXXZ24}  and yields new improved bounds on $\omega$ and several rectangular matrix multiplication exponents\footnote{
+  The constraint programs that our new method leads to are significantly larger and more complex than in prior work. The nonlinear solver we are using struggles, and it can take many days for it to get a solution for any fixed $\omega(1,k,1)$. Unfortunately, %
+  we were not able to solve the constraint program for the value $\alpha$ studied by Coppersmith~\cite{Coppersmith82,coppersmith1997rectangular} defined as the largest number such that $n$ by $n^\alpha$ by $n$ matrix multiplication can be done in $O(n^{2+\eps})$ time for all $\eps>0$. %
+} $\omega(1,k,1)$ defined as the smallest real value for which $n\times n^k$ by $n^k\times n$ matrix multiplication can be done in $O(n^{\omega(1,k,1)+\eps})$ time for all $\eps>0$; the previous best bounds for rectangular matrix multiplication were by \cite{LeGall24,VXXZ24}.
+
+Our results are summarized in \cref{table:result}.
+Our new bound on $\omega$ is 
+\[\omega<2.371339,\]
+improved from the previous bound by \cite{VXXZ24} of $\omega<2.371552$, inching towards the lower bound of $2.3078$.
+
+As a specific example for a rectangular matrix multiplication exponent, we obtain a new bound for the exponent $\mu$ satisfying the equation $\omega(1,\mu,1)=1+2\mu$. The previous bound from \cite{VXXZ24} was $\mu<0.527661$ and we improve it to $\mu<0.5275$. The value $\mu$ is a key part of the best known running times of several important problems, including All-Pairs Shortest Paths (APSP) in unweighted directed graphs~\cite{zwickbridge}, computing minimum witnesses of Boolean Matrix Multiplication \cite{CzumajKL07}, and All-Pairs Bottleneck Paths in node-weighted graphs~\cite{ShapiraYZ11}. Our new bound implies %
+that all the aforementioned problems can be solved in $O(n^{2.5275})$ time, improving on the previous known running time of $O(n^{2.527661})$.
+
+
+\input{table}

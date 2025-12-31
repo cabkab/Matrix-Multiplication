@@ -1,0 +1,218 @@
+\newcommand{\etalchar}[1]{$^{#1}$}
+\begin{thebibliography}{BCC{\etalchar{+}}17b}
+
+\bibitem[AFLG15]{ambainis}
+Andris Ambainis, Yuval Filmus, and Fran{\c{c}}ois Le~Gall.
+\newblock Fast matrix multiplication: limitations of the {Coppersmith-Winograd}
+  method.
+\newblock In {\em Proc. 47th {ACM} Symposium on Theory of Computing (STOC)},
+  pages 585--593, 2015.
+
+\bibitem[Alm21]{Alman21}
+Josh Alman.
+\newblock Limits on the universal method for matrix multiplication.
+\newblock {\em Theory Comput.}, 17:1--30, 2021.
+
+\bibitem[AV18a]{almanitcs}
+Josh Alman and Virginia {Vassilevska Williams}.
+\newblock Further limitations of the known approaches for matrix
+  multiplication.
+\newblock In {\em Proc. 9th Innovations in Theoretical Computer Science
+  Conference (ITCS)}, pages 25:1--25:15, 2018.
+
+\bibitem[AV18b]{aw2}
+Josh Alman and Virginia {Vassilevska Williams}.
+\newblock Limits on all known (and some unknown) approaches to matrix
+  multiplication.
+\newblock In {\em Proc. 59th {IEEE} Symposium on Foundations of Computer
+  Science (FOCS)}, pages 580--591, 2018.
+
+\bibitem[AV21]{AlmanW21}
+Josh Alman and Virginia {Vassilevska Williams}.
+\newblock A refined laser method and faster matrix multiplication.
+\newblock In {\em Proc. 2021 {ACM-SIAM} Symposium on Discrete Algorithms
+  (SODA)}, pages 522--539, 2021.
+
+\bibitem[BCC{\etalchar{+}}17a]{blasiak2017cap}
+Jonah Blasiak, Thomas Church, Henry Cohn, Joshua~A. Grochow, Eric Naslund,
+  William~F. Sawin, and Chris Umans.
+\newblock On cap sets and the group-theoretic approach to matrix
+  multiplication.
+\newblock {\em Discret. Anal.}, 2017(3):1--27, 2017.
+
+\bibitem[BCC{\etalchar{+}}17b]{blasiak2017groups}
+Jonah Blasiak, Thomas Church, Henry Cohn, Joshua~A. Grochow, and Chris Umans.
+\newblock Which groups are amenable to proving exponent two for matrix
+  multiplication?
+\newblock {\tt arXiv:1712.02302}, 2017.
+
+\bibitem[BCRL79]{BCRL79}
+Dario Bini, Milvio Capovani, Francesco Romani, and Grazia Lotti.
+\newblock ${O}(n^{2.7799})$ complexity for $n\times n$ approximate matrix
+  multiplication.
+\newblock {\em Inf. Process. Lett.}, 8(5):234--235, 1979.
+
+\bibitem[Beh46]{behrend1946sets}
+Felix~A. Behrend.
+\newblock On sets of integers which contain no three terms in arithmetical
+  progression.
+\newblock {\em Proceedings of the National Academy of Sciences of the United
+  States of America}, 32(12):331, 1946.
+
+\bibitem[Bl{\"a}13]{blaser}
+Markus Bl{\"a}ser.
+\newblock Fast matrix multiplication.
+\newblock {\em Theory of Computing, Graduate Surveys}, 5:1--60, 2013.
+
+\bibitem[CKL07]{CzumajKL07}
+Artur Czumaj, Miroslaw Kowaluk, and Andrzej Lingas.
+\newblock Faster algorithms for finding lowest common ancestors in directed
+  acyclic graphs.
+\newblock {\em Theor. Comput. Sci.}, 380(1-2):37--46, 2007.
+
+\bibitem[Cop82]{Coppersmith82}
+Don Coppersmith.
+\newblock Rapid multiplication of rectangular matrices.
+\newblock {\em {SIAM} J. Comput.}, 11(3):467--471, 1982.
+
+\bibitem[Cop97]{coppersmith1997rectangular}
+Don Coppersmith.
+\newblock Rectangular matrix multiplication revisited.
+\newblock {\em J. Complex.}, 13(1):42--49, 1997.
+
+\bibitem[CVZ21]{ChristandlVZ21}
+Matthias Christandl, P{\'{e}}ter Vrana, and Jeroen Zuiddam.
+\newblock Barriers for fast matrix multiplication from irreversibility.
+\newblock {\em Theory Comput.}, 17:1--32, 2021.
+
+\bibitem[CW82]{cw81as}
+Don Coppersmith and Shmuel Winograd.
+\newblock On the asymptotic complexity of matrix multiplication.
+\newblock {\em {SIAM} J. Comput.}, 11(3):472--492, 1982.
+
+\bibitem[CW90]{cw90}
+Don Coppersmith and Shmuel Winograd.
+\newblock Matrix multiplication via arithmetic progressions.
+\newblock {\em J. Symb. Comput.}, 9(3):251--280, 1990.
+
+\bibitem[DS13]{stothers}
+Alexander~M. Davie and Andrew~J. Stothers.
+\newblock Improved bound for complexity of matrix multiplication.
+\newblock {\em Proceedings of the Royal Society of Edinburgh: Section A
+  Mathematics}, 143:351--369, April 2013.
+
+\bibitem[DWZ23]{duan2023}
+Ran Duan, Hongxun Wu, and Renfei Zhou.
+\newblock Faster matrix multiplication via asymmetric hashing.
+\newblock In {\em Proc. 64th {IEEE} Symposium on Foundations of Computer
+  Science (FOCS)}, 2023.
+
+\bibitem[EHPS24]{elsholtz2024improving}
+Christian Elsholtz, Zach Hunter, Laura Proske, and Lisa Sauermann.
+\newblock Improving behrend's construction: Sets without arithmetic
+  progressions in integers and over finite fields.
+\newblock {\tt arXiv:2406.12290}, June 2024.
+
+\bibitem[GMS05]{SNOPT}
+Philip~E. Gill, Walter Murray, and Michael~A. Saunders.
+\newblock {SNOPT}: An {SQP} algorithm for large-scale constrained optimization.
+\newblock {\em SIAM Rev.}, 47(1):99--131, January 2005.
+
+\bibitem[LG12]{legallrect}
+Fran{\c{c}}ois Le~Gall.
+\newblock Faster algorithms for rectangular matrix multiplication.
+\newblock In {\em Proc. 53rd {IEEE} Symposium on Foundations of Computer
+  Science (FOCS)}, pages 514--523, 2012.
+
+\bibitem[LG14]{LeGall32power}
+Fran{\c{c}}ois Le~Gall.
+\newblock Powers of tensors and fast matrix multiplication.
+\newblock In {\em Proc. 39th International Symposium on Symbolic and Algebraic
+  Computation (ISSAC)}, pages 296--303, 2014.
+
+\bibitem[LG24]{LeGall24}
+Fran{\c{c}}ois Le~Gall.
+\newblock Faster rectangular matrix multiplication by combination loss
+  analysis.
+\newblock In {\em Proc. 2024 {ACM-SIAM} Symposium on Discrete Algorithms
+  (SODA)}, pages 3765--3791, 2024.
+
+\bibitem[LGU18]{legallrect2}
+Fran{\c{c}}ois Le~Gall and Florent Urrutia.
+\newblock Improved rectangular matrix multiplication using powers of the
+  {Coppersmith-Winograd} tensor.
+\newblock In {\em Proc. 29th {ACM-SIAM} Symposium on Discrete Algorithms
+  (SODA)}, pages 1029--1046, 2018.
+
+\bibitem[Mat22]{MATLAB2022}
+{MATLAB 9.12 (R2022a)}.
+\newblock The MathWorks Inc., Natick, Massachusetts, 2022.
+
+\bibitem[Pan78]{Pan78}
+Victor~Y. Pan.
+\newblock Strassen's algorithm is not optimal: Trililnear technique of
+  aggregating, uniting and canceling for constructing fast algorithms for
+  matrix operations.
+\newblock In {\em Proc. 19th IEEE Symposium on Foundations of Computer Science
+  (FOCS)}, pages 166--176, 1978.
+
+\bibitem[Rom82]{Romani82}
+Francesco Romani.
+\newblock Some properties of disjoint sums of tensors related to matrix
+  multiplication.
+\newblock {\em SIAM J. Comput.}, pages 263--267, 1982.
+
+\bibitem[Sch81]{Schonhage81}
+Arnold Sch{\"{o}}nhage.
+\newblock Partial and total matrix multiplication.
+\newblock {\em {SIAM} J. Comput.}, 10(3):434--455, 1981.
+
+\bibitem[SS42]{salemspencer}
+Rapha{\"e}l Salem and Donald~C. Spencer.
+\newblock On sets of integers which contain no three terms in arithmetical
+  progression.
+\newblock {\em Proceedings of the National Academy of Sciences},
+  28(12):561--563, 1942.
+
+\bibitem[Str69]{strassen}
+Volker Strassen.
+\newblock Gaussian elimination is not optimal.
+\newblock {\em Numer. Math.}, 13:354--356, 1969.
+
+\bibitem[Str86]{laser}
+Volker Strassen.
+\newblock The asymptotic spectrum of tensors and the exponent of matrix
+  multiplication.
+\newblock In {\em Proc. 27th IEEE Symposium on Foundations of Computer Science
+  (FOCS)}, pages 49--54, 1986.
+
+\bibitem[Str87]{strassenlaser1}
+Volker Strassen.
+\newblock Relative bilinear complexity and matrix multiplication.
+\newblock {\em J. reine angew. Math. (Crelles Journal)}, 375--376:406--443,
+  1987.
+
+\bibitem[SYZ11]{ShapiraYZ11}
+Asaf Shapira, Raphael Yuster, and Uri Zwick.
+\newblock All-pairs bottleneck paths in vertex weighted graphs.
+\newblock {\em Algorithmica}, 59(4):621--633, 2011.
+
+\bibitem[{Vas}12]{virgi12}
+Virginia {Vassilevska Williams}.
+\newblock Multiplying matrices faster than {Coppersmith-Winograd}.
+\newblock In {\em Proc. 44th Symposium on Theory of Computing Conference
+  (STOC)}, pages 887--898, 2012.
+
+\bibitem[VXXZ24]{VXXZ24}
+Virginia {Vassilevska Williams}, Yinzhan Xu, Zixuan Xu, and Renfei Zhou.
+\newblock New bounds for matrix multiplication: from alpha to omega.
+\newblock In {\em Proc. 2024 {ACM-SIAM} Symposium on Discrete Algorithms
+  (SODA)}, pages 3792--3835, 2024.
+
+\bibitem[Zwi02]{zwickbridge}
+Uri Zwick.
+\newblock All pairs shortest paths using bridging sets and rectangular matrix
+  multiplication.
+\newblock {\em J. {ACM}}, 49(3):289--317, 2002.
+
+\end{thebibliography}

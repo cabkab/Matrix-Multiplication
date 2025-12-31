@@ -1,0 +1,95 @@
+\tikzset{>={Latex[width=1.5mm,length=1mm]},
+ base/.style = {rectangle, rounded corners, draw=black, minimum width=11cm, minimum height=1cm, text centered},
+ regularblock/.style = {base},
+ small/.style = {rectangle, rounded corners, draw=black, minimum width=3.25cm, minimum height=1.5cm, text centered},
+ big/.style = {rectangle, rounded corners, draw=black, minimum width=11cm, minimum height=2cm, text centered}
+}
+
+
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+
+
+\node (input) at (0,0) [regularblock] {\textbf{Input}: $(\CW_q^{\otimes 2^{\ell-1}})^{\otimes n}$};
+
+\node (alpha) at (0,-2) [regularblock] {Zero out level-$\ell$ blocks according to $\alpha$};
+
+\node (hash) at (0,-4) [regularblock] {Asymmetric hashing};
+
+
+\node[align=left] (Zcomp1) at (-3.875, -7) [small] {$Z$-Compatibility\\ Zero out I};
+
+\node[align=left] (Zcomp2) at (0, -7) [small] {$Z$-Compatibility\\ Zero out II};
+
+\node[align=left] (Zcomp3) at (3.875, -7) [small] {$Z$-Usefulness\\ Zero out};
+
+\node (fix) at (0,-9.75) [regularblock] {Fix holes};
+
+\node (out) at (0,-11.75) [regularblock] {\textbf{Output}: Independent copies of interface tensors};
+
+\node[scale=1.3] at (0,-13) {(a) Global stage algorithm outline in \cite{VXXZ24}};
+
+\draw[->] (input) -- (alpha);
+\draw[->] (alpha) -- (hash);
+\draw[->] (Zcomp1) -- (Zcomp2);
+\draw[->] (Zcomp2) -- (Zcomp3);
+\draw[->] (fix) -- (out);
+
+
+\draw[->] (5.5,-4) -- (5.75, -4) -- (5.75, -5.5) -- (-5.75, -5.5) -- (-5.75, -7) -- (-5.5, -7);
+\draw[->] (5.5,-7) -- (5.75, -7) -- (5.75, -8.5) -- (-5.75, -8.5) -- (-5.75,-9.75) -- (-5.5, -9.75);
+
+\node[blue] at (0,-5.25) {Every level-$\ell$ $X$-block and $Y$-block is in a unique level-$\ell$ triple};
+\node[blue] at (0,-8.25) {Every level-$1$ $Z$-block is in a unique level-$\ell$ triple};
+
+
+\coordinate (shift1) at (12.5,0);
+\begin{scope}[shift=(shift1)]
+
+\node (input) at (0,0) [regularblock] {\textbf{Input}: $(\CW_q^{\otimes 2^{\ell-1}})^{\otimes n}$};
+
+\node (alpha) at (0,-1.5) [regularblock] {Zero out level-$\ell$ blocks according to $\alpha$};
+
+\node (hash) at (0,-3) [regularblock,fill=green!30] {More asymmetric hashing};
+
+
+\node[align=left,fill=green!30] (Ycomp1) at (-3.875, -5.25) [small] {$Y$-Compatibility\\ Zero out I};
+
+\node[align=left,fill=green!30] (Ycomp2) at (0, -5.25) [small] {$Y$-Compatibility\\ Zero out II};
+
+\node[align=left,fill=green!30] (Ycomp3) at (3.875, -5.25) [small] {$Y$-Usefulness\\ Zero out};
+
+
+\node[align=left] (Zcomp1) at (-3.875, -7.75) [small] {$Z$-Compatibility\\ Zero out I};
+
+\node[align=left] (Zcomp2) at (0, -7.75) [small] {$Z$-Compatibility\\ Zero out II};
+
+\node[align=left] (Zcomp3) at (3.875, -7.75) [small] {$Z$-Usefulness\\ Zero out};
+
+\node (fix) at (0,-10.25) [regularblock] {Fix holes};
+
+\node (out) at (0,-11.75) [regularblock] {\textbf{Output}: Independent copies of interface tensors};
+
+\draw[->] (input) -- (alpha);
+\draw[->] (alpha) -- (hash);
+\draw[->] (Ycomp1) -- (Ycomp2);
+\draw[->] (Ycomp2) -- (Ycomp3);
+\draw[->] (Zcomp1) -- (Zcomp2);
+\draw[->] (Zcomp2) -- (Zcomp3);
+\draw[->] (fix) -- (out);
+
+\node[blue] at (0,-4) {Every level-$\ell$ $X$-block is in a unique level-$\ell$ triple};
+
+\draw[->] (5.5,-3) -- (5.75, -3) -- (5.75, -4.25) -- (-5.75, -4.25) -- (-5.75, -5.25) -- (-5.5, -5.25);
+
+\node[blue] at (0,-6.5) {Every level-$1$ $Y$-block is in a unique level-$\ell$ triple};
+
+\draw[->] (5.5,-5.25) -- (5.75, -5.25) -- (5.75, -6.75) -- (-5.75, -6.75) -- (-5.75, -7.75) -- (-5.5, -7.75);
+
+\node[blue] at (0,-9) {Every level-$1$ $Z$-block is in a unique level-$\ell$ triple};
+
+\draw[->] (5.5,-7.75) -- (5.75, -7.75) -- (5.75, -9.25) -- (-5.75, -9.25) -- (-5.75,-10.25) -- (-5.5, -10.25);
+
+\node[scale=1.3] at (0,-13) {(b) Global stage algorithm outline in this work};
+\end{scope}
+    
+\end{tikzpicture}

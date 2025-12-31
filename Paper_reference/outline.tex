@@ -1,0 +1,72 @@
+\section{Algorithm Outline}
+\label{sec:outline}
+
+
+
+Our high-level framework is similar to previous works \cite{duan2023, VXXZ24}, and we borrow definitions such as interface tensors, compatibility, and usefulness. 
+We begin by defining the notion of interface tensors, which captures the structure of the intermediate tensors we obtain from different stages of our algorithm and pass to the next stages.
+
+\begin{definition}[Interface Tensor]\label{def:interface-tensor}
+  For a positive integer $\lvl\ge 1$ and any constant $0\le \eps \le 1$, a level-$\lvl$ $\eps$-\emph{interface tensor} $\T^*$ with parameter list 
+  \[\{(n_t, i_t, j_t, k_t, \splresXt, \splresYt, \splresZt)\}_{t \in [s]}\]
+  is defined as
+  \[
+    \T^* \defeq \bigotimes_{t = 1}^{s} T_{i_t, j_t, k_t}^{\otimes n_t}[\splresXt, \splresYt, \splresZt, \eps],
+  \]
+  where $i_t+j_t+k_t = 2^{\lvl}$ for every $t\in [s]$ (i.e., $T_{i_t, j_t, k_t}$ is a level-$\lvl$ constituent tensor) and  $\splresXt, \splresYt, \splresZt$ are level-$\lvl$ complete split distributions for $X$-, $Y$-, $Z$-variables respectively. We call each $T_{i_t, j_t, k_t}^{\otimes n_t}[\splresXt, \splresYt, \splresZt, \eps]$ a \emph{term} of $\T^*$. When $\eps = 0$, we will simply call $\T^*$ a level-$\lvl$ interface tensor. 
+\end{definition}
+
+Our algorithm takes $\bigbk{\CW_q^{\otimes 2^{\lvl^*-1}}}^{\otimes n}$ as input, and applies the global stage of the algorithm described in \cref{sec:global} to degenerate it into independent copies of a  level-$\lvl^*$ $\eps_{\lvl^*}$-interface tensor. For every $\lvl \in [\lvl^*]$, we will have a parameter $\eps_\lvl$ controlling the error margin of level-$\lvl$ interface tensors. Then for $\lvl = \lvl^*, \lvl^* \!-\! 1, \ldots, 2$, we apply the constituent stage of the algorithm described in \cref{sec:constituent} to degenerate a level-$\lvl$ $\eps_\lvl$-interface tensor into a tensor product between independent copies of level-$(\lvl-1)$ $\eps_{\lvl-1}$-interface tensors and a matrix multiplication tensor. Eventually, we obtain a tensor product between independent copies of level-$1$ $\eps_1$-interface tensors and a matrix multiplication tensor, which can then be degenerated into independent copies of matrix multiplication tensors. Thus, the overall algorithm degenerates $\bigbk{\CW_q^{\otimes 2^{\lvl^*-1}}}^{\otimes n}$ into independent copies of matrix multiplication tensors as desired. 
+
+
+
+
+
+
+
+\subsection{Algorithm Outline}\label{subsec:outline}
+
+The framework for the constituent stage is similar to the framework for the global stage.
+For simplicity, we only present the outline of our global stage algorithm for $\eps = 0$ as it captures the main ideas of our algorithm and illustrates the main differences between our algorithm and \cite{VXXZ24}'s. A high-level comparison between our algorithm and \cite{VXXZ24}'s is provided in \cref{fig:outline-compare}. 
+
+\begin{figure}
+    \centering
+    \input{alg-outline-fig-2}
+    \caption{Main differences between the global stage algorithm in \cite{VXXZ24} and this work as outlined in \cref{subsec:outline}. Other technical differences are omitted.}
+    \label{fig:outline-compare}
+\end{figure}
+
+As mentioned earlier, the goal of the global stage is to take $\bigbk{\CW_q^{\otimes 2^{\lvl-1}}}^{\otimes n}$ as input (for convenience, we will use $\lvl$ to denote $\lvl^*$), and output a set of level-$1$-independent level-$\lvl$ interface tensors. Since our algorithm treats the $X, Y, Z$ dimensions asymmetrically and there are six permutations of the $X, Y, Z$ dimensions, we can essentially apply our algorithm in six different ways. As a result, we will split $\bigbk{\CW_q^{\otimes 2^{\lvl-1}}}^{\otimes n}$ into $\bigotimes_{r \in [6]} \bigbk{\CW_q^{\otimes 2^{\lvl-1}}}^{\otimes A_r \cdot n}$ for some $A_1, \ldots, A_6 \ge 0$  and $\sum_{r = 1}^6 A_r = 1$, where we call each $\bigbk{\CW_q^{\otimes 2^{\lvl-1}}}^{\otimes A_r \cdot n}$ a \emph{region}. We apply our algorithm for each permutation of the $X, Y, Z$ dimensions on one of the regions. We note that in \cite{VXXZ24}, two of the three dimensions are treated symmetrically, so they only need to split the input tensor into $3$ regions instead of $6$. For simplicity, we outline each step of our algorithm on a fixed permutation without splitting $\bigbk{\CW_q^{\otimes 2^{\lvl-1}}}^{\otimes n}$ into regions in the following.
+
+
+
+\begin{enumerate}
+\item \textbf{Zero-out according to \boldmath$\alpha$.} This is a standard first step present in all previous applications of the laser method. For some distribution $\alpha$ over level-$\lvl$ constituent tensors, let $\alphx, \alphy, \alphz$ be the marginal distributions of $\alpha$ on the $X$-, $Y$-, $Z$-dimensions respectively. We zero out $X$-, $Y$-, $Z$-variable blocks that are not consistent with $\alphx, \alphy, \alphz$ respectively. 
+
+\item \textbf{Asymmetric hashing.} Similar to \cite{duan2023, VXXZ24}, we then apply asymmetric hashing. Unlike previous works, where after the asymmetric hashing each level-$\lvl$ $X$-variable block $X_I$ or $Y$-variable block $Y_J$ is contained in a unique level-$\lvl$ triple $X_I Y_J Z_K$, we only require each level-$\lvl$ $X$-block to be contained in a unique triple. Moreover, the number of triples containing each level-$\lvl$ $Y$-block is at most the number of triples containing each level-$\lvl$ $Z$-block. 
+
+
+\item \textbf{\boldmath$Y$-compatibility zero-outs.} In \cite{duan2023, VXXZ24}, the next step is to do some zeroing outs based on a notion of compatibility defined for level-$1$ $Z$-blocks, provided that every level-$1$ $X$- and $Y$-block is contained in a unique block triple. So in our algorithm, we first need to ensure that each level-$1$ $Y$-block is contained in a unique block triple by performing the following sub-steps. 
+
+Note that our goal is to obtain an interface tensor with  $\left\{\splres_{\itX, i, j, k}, \splres_{\itY, i, j, k}, \splres_{\itZ, i, j, k}\right\}_{i+j+k = 2^\lvl}$ as its complete split distributions. Since each level-$\lvl$ $X$-block is contained in a unique block triple, we are already able to identify the subset of indices $t$ with $X_t = i$, $Y_t = j$, $Z_t = k$ for every $i, j, k$. This means that we can compute the complete split distributions for each level-$1$ $X$-block with respect to these indices, and zero out any level-$1$ $X$-block that is not consistent with $\left\{\splres_{\itX, i, j, k}\right\}_{i+j+k = 2^\lvl}$. 
+
+\begin{enumerate}
+    \item \textbf{\boldmath$Y$-compatibility zero-out I.} Then we define a notion of compatibility for a level-$1$ $Y$-block with respect to a level-$\lvl$ block triple containing it. We say a level-$1$ $Y$-block is compatible with a level-$\lvl$ block triple if they satisfy the compatibility conditions. We zero out all level-$1$ $Y$-blocks that are not compatible with any triple. 
+    \item \textbf{\boldmath$Y$-compatibility zero-out II.} In this step, we zero out the level-$1$ $Y$-blocks that are compatible with more than one triple. After this step, we can ensure that each level-$1$ $Y$-block is contained in a unique level-$\lvl$ block triple and it is compatible with that triple. 
+    \item \textbf{\boldmath$Y$-usefulness zero-out.} At this point, each level-$1$ $Y$-block is contained in a unique triple, so we can zero out a level-$1$ $Y$-block if it is not consistent with $\left\{\splres_{\itY, i, j, k}\right\}_{i+j+k = 2^\lvl}$, similar to what we did to the level-$1$ $X$-blocks. 
+\end{enumerate}
+
+
+\item \textbf{\boldmath$Z$-compatibility zero-outs.} Although after the more asymmetric hashing step, we only have $X$-blocks in a unique triple, notice that after $Y$-compatibility zero-outs, we achieve the property that now every level-$1$ $X$- and $Y$-block is compatible with a unique level-$\ell$ triple. This property is weaker than the property achieved in \cite{duan2023, VXXZ24} after their original asymmetric hashing steps, but this is sufficient for later steps. In particular, in our $Z$-compatibility zero-out, we can perform essentially the same procedure as in \cite{VXXZ24} to achieve the property that every level-$1$ $Z$-block is compatible with a unique level-$\lvl$ triple.
+
+\item  \textbf{Fixing holes.} Now every level-$1$ block is contained in a unique level-$\ell$ triple, but some of the level-$1$ blocks we zeroed out in $Y$-compatibility zero-outs and $Z$-compatibility zero-outs become holes, i.e., the copies of the interface tensors we obtain miss some variables due to the compatibility zero-outs. We use the following result to fix these holes.
+
+\begin{theorem}[{\cite[Corollary 3.2]{VXXZ24}}]\label{thm:fix-holes}
+    Let $T$ be a level-$\ell$ interface tensor with parameter list
+    \[\{(n_t, i_t, j_t, k_t, \splresXt, \splresYt, \splresZt)\}_{t \in [s]}.\]
+    Let $N = 2^{\ell-1} \cdot \sum_{t\in [s]} n_t$. Suppose $T_1, \dots, T_r$ are broken copies of $T$ where $\le \frac{1}{8N}$ fraction of level-1 $X$, $Y$, and $Z$-blocks are holes. If $r \ge 2^{C_1 N / \log N}$ for some large enough constant $C_1>0$, the direct sum $\bigoplus_{i = 1}^r T_i$ can degenerate into an unbroken copy of $T$.
+\end{theorem}
+
+
+
+\end{enumerate}

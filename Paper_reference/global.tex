@@ -1,0 +1,475 @@
+\section{Global Stage}\label{sec:global}
+
+For our global stage algorithm, the input is the tensor $\CW_q^{\otimes N}$ where $N = n\cdot 2^{\lvl^*-1}$. The algorithm will output a set of independent copies of level-$\lvl^*$ interface tensors that are degenerated from the input tensor. For convenience, we use $\lvl$ to denote $\lvl^*$ in the rest of this section.
+
+Given a distribution $\alpha$ over the set $\{(i, j, k) \in \mathbb{Z}_{\ge 0}^3 \mid i + j + k = 2^{\lvl}\}$ and level-$\lvl$ complete split distributions $\splres_{\itX, i, j, k}$, $\splres_{\itY, i, j, k}$, $\splres_{\itZ, i, j, k}$ we define the quantities listed in \cref{tab:notation}.
+
+\begin{table}[ht]
+    \centering
+    {\def\arraystretch{1.5}
+    \begin{tabular}{|| c  p{12cm} ||}
+    \hline
+       Notation  & Definition \\
+       \hline\hline
+        \multirow{1.7}*{$\alphx, \alphy,\alphz$} & The marginal distributions of $\alpha$ on the $X,Y,Z$-dimension respectively. E.g., for any $i$, $\alphx(i) = \sum_{j, k} \alpha(i, j, k)$; similarly for $\alphy(j), \alphz(k)$.\\
+
+        \hline
+        
+        \multirow{1.7}*{$P_\alpha$} & The penalty term $P_\alpha \defeq \max_{\alpha' \in D} H(\alpha') - H(\alpha) \ge 0$ where $D$ is the set of distributions with marginals $\alphx, \alphy, \alphz$.\\
+
+        \hline
+
+        $\alpha(i,\+, \+)$ & $\alpha(i, \+, \+) \defeq \sum_{j > 0, k > 0} \alpha(i, j, k)$\\
+
+        $\alpha(\+,j,\+)$ & $\alpha(\+,j, \+) \defeq \sum_{i > 0, k > 0} \alpha(i, j, k)$ \\
+
+        $\alpha(\+,\+,k)$ & $\alpha(\+, \+,k) \defeq \sum_{i > 0, j > 0} \alpha(i, j, k)$ \\
+
+        \hline
+
+        $\splresavg_{\itX, i, \+, \+}$ &  $\splresavg_{\itX, i, \+, \+}\defeq \frac{1}{\alpha(i,\+, \+)} \sum_{j > 0, k > 0} \alpha(i, j, k) \cdot \splres_{\itX, i, j, k}$\\
+
+        $\splresavg_{\itY, \+, j, \+}$ &  $\splresavg_{\itY, \+, j, \+}\defeq \frac{1}{\alpha(\+, j, \+)} \sum_{i > 0, k > 0} \alpha(i, j, k) \cdot \splres_{\itY, i, j, k}$\\
+
+        $\splresavg_{\itZ, \+, \+, k}$ & $\splresavg_{\itZ, \+, \+, k}\defeq \frac{1}{\alpha(\+, \+, k)} \sum_{i > 0, j > 0} \alpha(i, j, k) \cdot \splres_{\itZ, i, j, k}$\\
+
+        \hline
+
+        $\splavg{\itX}$ & $\splavg{\itX} \defeq \sum_{i, j, k} \alpha(i, j, k) \cdot \splres_{\itX, i, j, k}$ \\
+
+        $\splavg{\itY}$ & $\splavg{\itY} \defeq \sum_{i, j, k} \alpha(i, j, k) \cdot \splres_{\itY, i, j, k}$ \\
+
+        $\splavg{\itZ}$ & $\splavg{\itZ} \defeq \sum_{i, j, k} \alpha(i, j, k) \cdot \splres_{\itX, i, j, k}$ \\
+
+        \hline
+
+        $\splresavg_{\itX, i,*,*}$ & $\splresavg_{\itX, i,*,*} = \frac{1}{\alpha(i,*,*)}\sum_{j+k = 2^\lvl - i} \alpha(i, j, k) \cdot \splres_{\itX,i,j,k}$\\
+
+        $\splresavg_{\itY, *,j,*}$ & $\splresavg_{\itY, *,j,*} = \frac{1}{\alpha(*,j,*)}\sum_{i+k = 2^\lvl - j} \alpha(i, j, k) \cdot \splres_{\itY,i,j,k}$\\
+
+        $\splresavg_{\itZ, *,*,k}$ & $\splresavg_{\itZ, *,*,k} = \frac{1}{\alpha(*,*,k)}\sum_{i+j = 2^\lvl - k} \alpha(i, j, k) \cdot \splres_{\itZ,i,j,k}$\\
+
+        \hline
+
+        $\eta_\itY$ & $\eta_\itY = \sum_{i,j,k \,:\, k =0}\alpha(i,j,k)\cdot H(\splres_{\itY, i,j,k}) + \sum_{j}\alpha(*,j,\+)\cdot H(\splresavg_{\itY,*,j,\+})$\\
+
+        $\lambda_\itZ$ & $\lambda_\itZ = \sum_{i, j, k \,:\, i = 0 \textup{ or } j = 0} \alpha(i, j, k) \cdot H(\splres_{\itZ, i, j, k}) + \sum_k \alpha(\+, \+, k) \cdot H(\splresavg_{\itZ, \+, \+, k})$\\
+
+        \hline
+        
+    \end{tabular}
+    }
+    \caption{Table of notations with respect to a distribution $\alpha$ over $\{(i, j, k) \in \mathbb{Z}_{\ge 0}^3 \mid i + j + k = 2^{\lvl}\}$ and level-$\lvl$ complete split distributions $\splres_{\itX, i, j, k}, \splres_{\itY, i, j, k}, \splres_{\itZ, i, j, k}$.}
+    \label{tab:notation}
+\end{table}
+
+In particular, our {\bf notations} follow the general rules below:
+
+\begin{enumerate}
+    \item Given a function $f(i,j,k)$, we may replace any of the input by the symbol $*$ or $\+$. If an input coordinate is a \say{$*$}, then it means the sum over $f$ evaluated at all the inputs that are $\ge 0$ in this input coordinate; if an input coordinate is a \say{$\+$}, then it means the sum over  $f$ evaluated at all the inputs that are $> 0$ in this input coordinate. For example, $f(*, j,k) = \sum_{i\ge 0} f(i,j,k)$ and $f(*,\+,k) = \sum_{i\ge 0, j>0} f(i,j,k)$.
+
+    We will also use $\bar{f}$ together with the symbols $*$ or $\+$ to denote a weighted average. Typically, we use this notation on the complete split distributions $\beta$, and the average is weighted by $\alpha$. For instance, $\splresavg_{\itX, *, \+, k} = \frac{1}{\alpha(*, \+, k)} \sum_{i\ge 0, j>0} \alpha(i, j, k) \cdot \splres_{\itX, i, j, k}$. 
+    
+    \item Given a family of sets $S_{i,j,k}$, we may replace any of the subscripts by the symbol $*$ or $\+$. If any coordinate of the subscript is a ``$*$'', then it means the union over $S_{i,j,k}$ with subscript $\ge 0$ on this coordinate; if any coordinate of the subscript is a ``$\+$'', then it means the union over $S_{i,j,k}$ with subscript $> 0$ on this coordinate. For example, $S_{*,j,k} = \bigcup_{i\ge 0} S_{i,j,k}$ and $S_{*,\+,k}= \bigcup_{i\ge 0, j>0} S_{i,j,k}$.
+
+\end{enumerate}
+
+In the following proposition, for every $r\in [6]$, we have the distributions $\alpha^{(r)}$, $\splres_{\itX, i, j, k}^{(r)}$, $\splres_{\itY, i, j, k}^{(r)}$, $\splres_{\itZ, i, j, k}^{(r)}$ correspondingly and we use the superscript $(r)$ on variables obtained from $\alpha^{(r)}$, $\splres_{\itX, i, j, k}^{(r)}$, $\splres_{\itY, i, j, k}^{(r)}$, $\splres_{\itZ, i, j, k}^{(r)}$. 
+
+\begin{prop}
+\label{prop:global-stage-no-eps}
+    $\bigbk{\CW_q^{\otimes 2^{\lvl-1}}}^{\otimes n}$ can be degenerated into a direct sum of $2^{(\sum_{r=1}^6 A_r E_r) n - o(n)}$ copies of a level-$\lvl$ interface tensor with parameter list 
+    \[ \left\{\bk{ n \cdot A_r \cdot \alpha^{(r)}(i, j, k), i, j, k, \splres_{\itX, i, j, k}^{(r)}, \splres^{(r)}_{\itY, i, j, k}, \splres^{(r)}_{\itZ, i, j, k} }\right\}_{r \in [6], \, i + j + k = 2^{\lvl}} \]
+    where
+    \begin{itemize}
+        \item $0 \le A_r \le 1$, $\sum_{r=1}^6 A_r = 1$;
+        \item $\alpha^{(r)}$ for every $r \in [6]$ is a  distribution over $\{(i, j, k) \in \mathbb{Z}_{\ge 0}^3 \mid i + j + k = 2^{\lvl}\}$;
+        \item For every $W \in \{X, Y, Z\}$, $\splres_{\itW, i, j, k}^{(r)}$ for $r \in [6]$, $i + j + k = 2^{\lvl}$ is a level-$\lvl$ complete split distribution;
+        \item For each $r \in [6]$, define $\pi_r: \{X, Y, Z\} \to \{X, Y, Z\}$ as the $r$-th permutation in the lexicographic order. Then 
+        \[
+        E_r \defeq \min\left\{H\Bigbk{\alpha_{\pi_r(X)}^{(r)}} - P_\alpha^{(r)}, H\Bigbk{\splavg{\pi_r(Y)}^{(r)}} - \eta_{\pi_r(Y)}^{(r)},  H\Bigbk{\splavg{\pi_r(Z)}^{(r)}} - \lambda_{\pi_r(Z)}^{(r)}\right\}.
+        \]
+    \end{itemize}
+\end{prop}
+
+The following remark illustrates some simple relationships between the complete split distributions for the $X$, $Y$, $Z$-dimensions that we can assume without loss of generality, which will be useful in our algorithms. 
+
+
+\begin{remark}[\cite{VXXZ24}]
+\label{rmk:assumptions_on_complete_split_dist}
+Without loss of generality, we can assume that, for every $r, i, j, k$, and every $L \in \{0, 1, 2\}^{2^{\lvl-1}}$, 
+\[
+\splres^{(r)}_{\itX, i, 0, k}(L) = \splres^{(r)}_{\itZ, i, 0, k}(\vec{2}-L), \quad   
+\splres^{(r)}_{\itZ, 0, j, k}(L) = \splres^{(r)}_{\itY, 0, j, k}(\vec{2}-L), \quad
+\splres^{(r)}_{\itY, i, j, 0}(L) = \splres^{(r)}_{\itX, i, j, 0}(\vec{2}-L), 
+\]
+where $\vec{2}$ denotes the length-$(2^{\lvl-1})$ vector whose coordinates are all $2$, 
+and 
+\[
+\splres^{(r)}_{\itX, i, j, k}(L) = 0 \text{ if } \sum_{t} L_t \ne i, \quad   
+\splres^{(r)}_{\itY, i, j, k}(L) = 0 \text{ if } \sum_{t} L_t \ne j, \quad   
+\splres^{(r)}_{\itZ, i, j, k}(L) = 0 \text{ if } \sum_{t} L_t \ne k,   
+\]
+because otherwise, the level-$\lvl$ interface tensor will be the zero tensor and the lemma will follow trivially. 
+\end{remark}
+
+The following is a corollary of \cref{prop:global-stage-no-eps}. We omit its proof as it is similar to the proof of \cite[Theorem 5.3]{VXXZ24}. 
+
+\begin{theorem}
+\label{thm:global-stage-with-eps}
+For any $\eps > 0$, $2^{o(n)}$ independent copies of $(\CW_q^{\otimes 2^{\lvl-1}})^{\otimes n}$ can be degenerated into 
+    $$2^{(\sum_{r=1}^6 E_r A_r - o_{1/\eps}(1)) n - o(n)}$$
+    independent copies of a level-$\lvl$ $\eps$-interface tensor with parameter list 
+    \[ \left\{ \bk{ n \cdot A_r \cdot \alpha^{(r)}(i, j, k), i, j, k, \splres_{\itX, i, j, k}^{(r)}, \splres^{(r)}_{\itY, i, j, k}, \splres^{(r)}_{\itZ, i, j, k} } \right\}_{r \in [6], i + j + k = 2^{\lvl}} \]
+    where the constraints are the same as those in \cref{prop:global-stage-no-eps}.\footnote{$\oeps(1)$ denotes a function $f(\eps)$ where $f(\eps) \to 0$ as $\eps \to 0$. We also use $\oeps(n)$ to denote $\oeps(1) \cdot n$.}
+\end{theorem}
+
+In the remainder of this section, we prove \cref{prop:global-stage-no-eps}. 
+
+
+
+\subsection{Dividing into Regions}
+
+
+As in previous works \cite{duan2023, VXXZ24}, we partition the $n$-th tensor power of $\CW_q^{\otimes 2^{\lvl-1}}$ into several ``regions''. For each different region, we use a different permutation for the roles of the $X$, $Y$, $Z$-dimensions. In \cite{duan2023, VXXZ24}, they partition $(\CW_q^{\otimes 2^{\lvl-1}})^{\otimes n}$ into three regions due to the fact that two out of the three dimensions are treated symmetrically in their algorithms. Since our method is more asymmetric, we need to partition $(\CW_q^{\otimes 2^{\lvl-1}})^{\otimes n}$ into six regions instead. More specifically, we consider 
+\[\bigbk{\CW_q^{\otimes 2^{\lvl-1}}}^{\otimes n} \equiv \bigotimes_{r=1}^6 \bigbk{\CW_q^{\otimes 2^{\lvl-1}}}^{\otimes A_r\cdot n}\]
+for $A_1, \ldots, A_6 \ge 0$ and $A_1 + \cdots + A_6 = 1$, and we denote the $r$-th region by $\T^{(r)}$. 
+
+In the following, we will focus on the analysis for $\T^{(1)}$. The analysis for other regions is similar, but we permute the roles of the $X$, $Y$, $Z$-dimensions in different regions. For simplicity, we will drop the superscript $(1)$. 
+
+\subsection{More Asymmetric Hashing}
+
+This hashing step is standard in all previous literature on applications of the laser method, and we only deviate from previous works at the end of this step. Nevertheless, we repeat the description of the hashing procedure for completeness. 
+
+Let $\alpha$ be a distribution on $\{(i, j, k) \in \mathbb{Z}_{\ge 0}^3\mid i + j + k = 2^{\lvl}\}$, and let $\alphx, \alphy, \alphz$ be the marginal distributions of $\alpha$ on the three dimensions respectively. 
+
+First, in $\T$, we zero out the level-$\ell$ $X$-blocks that are not consistent with $\alphx$, the level-$\ell$ $Y$-blocks that are not consistent with $\alphy$, and the level-$\ell$ $Z$-block that are not consistent with $\alphz$. Let $\numxblock, \numyblock, \numzblock$ be the number of remaining $X$, $Y$, $Z$-blocks respectively, $\numtriple$ be the number of remaining block triples, and $\numalpha$ be the number of remaining block triples consistent with $\alpha$. These values can be approximated in the standard way: 
+
+\begin{claim}
+\EquationOnSameLine{\numxblock = 2^{H(\alphx) \cdot A_1 n \pm o(n)}, \quad \numyblock = 2^{H(\alphy) \cdot A_1 n \pm o(n)}, \quad \numzblock = 2^{H(\alphz) \cdot A_1 n \pm o(n)}, \phantom{\textbf{Claim X.X.}}}
+\[
+  \numalpha = 2^{H(\alpha) \cdot A_1 n \pm o(n)}, \quad \numtriple = 2^{(H(\alpha) + P_\alpha) \cdot A_1 n \pm o(n)}. 
+\]
+\end{claim}
+
+Let
+\begin{equation}
+\label{eq:global:initial-M0-bound}
+    M_0 \ge 8 \cdot \frac{\numtriple}{\numyblock}
+\end{equation}
+be an integer yet to be fixed, and let $M \in [M_0, 2M_0]$ be a prime number (its existence is guaranteed by Bertrand's postulate). For random $b_0, \{w_t\}_{t=0}^n \in \Z_M$, we define three hash functions $\hashx, \hashy, \hashz : \{0, \ldots, 2^\lvl\}^n \rightarrow \Z_M$ as:
+\begin{align*}
+    \hashx(I) &= b_0 + \left(\sum_{t=1}^n w_t \cdot I_t \right) \bmod M,\\
+    \hashy(J) &= b_0 + \left(w_0 + \sum_{t=1}^n w_t \cdot J_t \right) \bmod M,\\
+    \hashz(K) &= b_0 + \frac{1}{2}\left(w_0+\sum_{t=1}^n w_t \cdot (2^\lvl - K_t) \right) \bmod M.
+\end{align*}
+Let $B$ be the Salem-Spencer subset of $\Z_M$ of size $M^{1-o(1)}$ from \cref{thm:salemspencer} that contains no three-term arithmetic progressions. Then we zero out all the level-$\ell$ $X$-blocks $X_I$ where $\hashx(I) \not \in B$, all the level-$\ell$ $Y$-blocks $Y_I$ where $\hashy(J) \not \in B$, and all the level-$\ell$ $Z$-blocks $X_K$ where $\hashz(K) \not \in B$. 
+
+Note that by definition of the hash functions, we have  $\hashx(I) + \hashy(J) = 2 \hashz(K)$ for any block triple $X_I Y_J Z_K$ (as $\hashx(I), \hashy(J), \hashz(K) \in Z_M$, this equation holds modulo $M$ if we view them as integers in $\Z$). Therefore, since we only keep blocks whose hash values belong to the Salem-Spencer set $B$, all remaining block triples $X_I Y_J Z_K$ must have $\hashx(I) = \hashy(J) = \hashz(K) = b$ for some $b \in B$. Now for every $b \in B$, if there are two block triples $X_I Y_J Z_K$ and $X_I Y_{J'} Z_{K'}$ that are both hashed to $b$ and share the same $X$-block $X_I$, we zero out $X_I$. 
+
+We call the tensor after this zeroing out $\THash$ and note that every level-$\ell$ $X$-block is in a unique level-$\ell$ block triple in $\THash$. We highlight that this is the start of the main deviation from previous works. In previous works \cite{duan2023, VXXZ24}, after this step all level-$\ell$ $X$-blocks and $Y$-blocks are in unique block triples; in earlier works \cite{laser,virgi12,stothers,LeGall32power,AlmanW21}, all level-$\ell$ blocks are in unique block triples. 
+
+
+We summarize the properties of this hashing procedure and $\THash$ in the following lemma.
+
+\begin{lemma}[Properties of more asymmetric hashing]\label{lem:more-asym-hash}
+
+The above described procedure and its output $\THash$ satisfy the following:
+
+\begin{enumerate}
+    \item \textup{(Implicit in \cite{cw90}, see also \cite{duan2023})} For any level-$\lvl$ block triple $X_I Y_J Z_K\in \T$ and every bucket $b\in \Z_M$, we have 
+    \[\Pr\Bk{\tall \hashx(I) = \hashy(J) = \hashz(K) = b} = \frac{1}{M^2}.\]
+    Furthermore, for any $b \in \Z_M$ we have that any two different block triples $X_I Y_J Z_K,  X_I Y_{J'} Z_{K'} \in \T$ that share the same $X$-block satisfy
+    \[\Pr\Bk{\tall \hashx(I) = \hashy(J') = \hashz(K') = b \;\middle\vert\; \hashx(I) = \hashy(J) = \hashz(K) = b} = \frac{1}{M}.\]
+    The same holds for different blocks that share the same $Y$-block or $Z$-block.
+
+    \item
+    \label{item:lem:more-asym-hash:item2}
+    \textup{(Similar to {\cite[Claim 5.6]{VXXZ24}})} For every $b \in B$ and every level-$\lvl$ block triple $X_I Y_J Z_K \in \T$ consistent with $\alpha$, we have
+    \[\Pr\Bk{X_IY_JZ_K\in \THash \;\middle\vert\; \hashx(I) = \hashy(J) = \hashz(K) = b}\ge \frac{3}{4}.\]
+
+    \item \textup{({\cite[Claim 5.7]{VXXZ24}})} \[\E[\textup{number of level-$\lvl$ triples in $\THash$}] \ge \numalpha \cdot M_0^{-1-o(1)}.\]
+\end{enumerate}
+    
+\end{lemma}
+
+
+
+
+\subsection{\texorpdfstring{\boldmath$Y$}{Y}-Compatibility Zero-Out}
+\label{subsec:global:Y-comp-zero-out}
+Let 
+\[ S^{(I, J, K)}_{i, j, k} \defeq \{t \in [n] \mid I_t = i, J_t = j, K_t = k\}\]
+and 
+\[S^{(J)}_{*, j, *} \defeq \{t \in [n] \mid J_t = j\}, \quad  S^{(K)}_{*, *, k} \defeq \{t \in [n] \mid K_t = k\}.\]
+We will drop the superscripts if the context is clear.\footnote{If we follow our general rules for notations described at the beginning of \cref{sec:global} strictly, $S_{*,j,*}^{(J)}$ and $S_{*,*,k}^{(K)}$ would be denoted as $S_{*,j,*}^{(I, J, K)}$ and $S_{*,*,k}^{(I, J, K)}$, but notice that the extra superscripts can be dropped as they do not affect the values of $S_{*,j,*}^{(I, J, K)}$ and $S_{*,*,k}^{(I, J, K)}$.
+}
+
+
+Recall that in $\THash$, every level-$\ell$ $X$-block is in a unique block triple, so given a level-$\ell$ block $X_I$, we can uniquely determine the level-$\ell$ block triple $X_I Y_J Z_K$ containing it. For any $i, j, k$, and any level-1 block $X_{\hat I} \in X_I$, if $\split(\hat I, S_{i, j, k}) \ne \splres_{\itX, i, j, k}$, we zero out $X_{\hat I}$. 
+
+The overall goal of this step is to zero out some level-1 $Y$-blocks, so that each remaining level-1 $Y$-block belongs to a unique level-$\ell$ block triple as well. 
+
+\subsubsection{\texorpdfstring{\boldmath$Y$}{Y}-Compatibility Zero-Out I}
+
+Given any level-1 $Y$-block $Y_{\hat J}$, if there exists a $j$ such that $\split(\hat J, S_{*, j, *}) \ne \splresavg_{\itY, *,j,*}$, then we zero out $Y_{\hat J}$. Eventually, the goal is to obtain independent copies of the interface tensor with complete split distributions $\left\{\splres_{\itX, i, j, k}, \splres_{\itY, i, j, k}, \splres_{\itZ, i, j, k}\right\}_{i+j+k = 2^\lvl}$. For any $Y_{\hat J} \in Y_J$, if $Y_{\hat J}$ belongs to such an interface tensor, then we must have $\split(\hat J, S_{*, j, *}) = \splresavg_{\itY, *,j,*}$ for every $j$. This is because if there exist $X_{\hat I} \in X_I$ and $ Z_{\hat K} \in Z_K$ such that $X_{\hat I} Y_{\hat J} Z_{\hat K} \in X_I Y_J Z_K$, where $X_{\hat I} Y_{\hat J} Z_{\hat K}$ is consistent with the complete split distributions and $X_I Y_J Z_K$ is consistent with $\alpha$, then one can verify that $\split(\hat J, S_{*, j, *}) = \splresavg_{\itY, *,j,*}$ for every $j$ regardless of what $X_{\hat I}$ and $Z_{\hat K}$ are. So it does not hurt to zero out these $Y_{\hat J}$ blocks. We call the tensor obtained after this zero-out $\TYComp$. 
+
+Next, we define the notion of compatibility for level-1 $Y$-blocks, which is similar to the definition of compatibility in \cite{VXXZ24}. 
+
+
+\begin{definition}[$Y$-Compatibility]
+  \label{def:global:Y-compatibility}
+Given a level-$\ell$ triple $X_I Y_J Z_K$ and a level-$1$ $Y$-block $Y_{\hat J}\in Y_J$, we say that $Y_{\hat J}$ is compatible with $X_I Y_J Z_K$ if the following hold:
+  \begin{enumerate}
+  \item 
+    \label{item:global:Y-compatibility1} For every $(i, j, k) \in \mathbb{Z}_{\ge 0}^3$ with $ i + j + k = 2^{\lvl}$ and $k = 0$, $\split(\hat J, S_{i,j,k}) = \splres_{\itY,i,j,k}$.
+  \item
+    \label{item:global:Y-compatibility2}
+    For every index $j \in \{0, 1, \ldots, 2^\lvl\}$,  $\split(\hat J, S_{*,j,*}) = \splresavg_{\itY, *,j,*}$.
+  \end{enumerate}
+\end{definition}
+
+\begin{claim}
+  \label{cl:global:Y-compatible}
+  In $\TYComp$, for every level-1 block triple $X_{\hat I}Y_{\hat J}Z_{\hat K}$ and the level-$\lvl$ block triple $X_I Y_J Z_K$ that contains it, $Y_{\hat J}$ is compatible with $X_I Y_J Z_K$.
+\end{claim}
+\begin{proof}
+    It is easy to see that \cref{item:global:Y-compatibility2} is satisfied by our procedure since we will zero out all the level-1 $Y_{\hat{J}}$ block if there exists $j\in \{0, \ldots, 2^\ell\}$ such that $\split(\hat J, S_{*, j, *}) \ne \splresavg_{\itY, *,j,*}$. So it suffices to show \cref{item:global:Y-compatibility1}.
+
+    Note that all the remaining level-1 $X$-blocks $X_{\hat{I}}$ satisfy $\split(\hat{I}, S_{i,j,k}) = \splres_{\itX,i,j,k}$ for all $(i,j,k)\in \Z_{\ge 0}^3$ with $i+j+k = 2^\ell$ due to the first zero-out in \cref{subsec:global:Y-comp-zero-out} on level-$1$ $X$-blocks. Now consider $(i,j,k)\in \Z_{\ge 0}^3$ with $k = 0$ and $i+j+k = 2^\ell$. In a remaining level-$1$ triple $X_{\hat I}Y_{\hat J}Z_{\hat K}$, we must have $\split(\hat{I}, S_{i,j,k}) = \splres_{\itX, i,j,k}$. Then since $k = 0$, we have $K_t = 0$ for all $t\in S_{i,j,k}$, i.e., $(\hat{K}_{(t-1)\cdot 2^{\ell-1}+1},\hat{K}_{(t-1)\cdot 2^{\ell-1}+2}, \dots, \hat{K}_{t\cdot 2^{\ell-1}}) = \vec{0}$.
+    Since we have for each $\hat{t} \in \{(t \! - \! 1) \cdot 2^{\ell-1} \! + \! 1, \, \dots \, , \, t \cdot 2^{\ell-1}\}$, $\hat{I}_{\hat t} + \hat{J}_{\hat t} + \hat{K}_{\hat t} = 2$, we have for all $t\in S_{i,j,k}$,
+    \[\lpr{\hat{J}_{(t-1)\cdot 2^{\ell-1}+1},\hat{J}_{(t-1)\cdot 2^{\ell-1}+2}, \dots, \hat{J}_{t\cdot 2^{\ell-1}}} = \vec{2} - \lpr{\hat{I}_{(t-1)\cdot 2^{\ell-1}+1},\hat{I}_{(t-1)\cdot 2^{\ell-1}+2}, \dots, \hat{I}_{t\cdot 2^{\ell-1}}}.\]
+    So for every length-$2^{\ell-1}$ tuple $L\in \{0,1,2\}^{2^{\ell-1}}$, we must have 
+    \[\split(\hat{J},S_{i,j,k})(L) = \split(\hat{I}, S_{i,j,k})(\vec{2}-L) = \splres_{\itX,i,j,k}(\vec{2} - L).\]
+    By \cref{rmk:assumptions_on_complete_split_dist}, we have that $\split(\hat{J},S_{i,j,k})(L) = \splres_{\itX,i,j,k}(\vec{2} - L) = \splres_{\itY,i,j,k}(L)$ as desired.
+\end{proof}
+
+\subsubsection{\texorpdfstring{\boldmath$Y$}{Y}-Compatibility Zero-Out II: Unique Triple}
+
+After the previous step, it is guaranteed that every remaining level-1 $Y$-block $Y_{\hat J}$ is compatible with all the level-$\lvl$ block triples containing it by \cref{cl:global:Y-compatible}. In order to ensure that each remaining $Y_{\hat J}$ belongs to a unique triple after further zero-outs, it suffices to guarantee that $Y_{\hat J}$ belongs to a unique triple that it is compatible with. Therefore, given any $Y_{\hat J}$ that is compatible with more than one triple, we zero it out. 
+
+After this step, each remaining $Y_{\hat J}$ belongs to a unique triple, and additionally $Y_{\hat J}$ is compatible with this triple. 
+
+\subsubsection{\texorpdfstring{\boldmath$Y$}{Y}-Usefulness Zero-Out}
+
+At this point, each remaining level-1 block $Y_{\hat J}$ belongs to a unique triple $X_I Y_J Z_K$. So now we can check whether $\split(\hat J, S_{i, j, k}) = \splres_{\itY, i, j, k}$ for all $i, j, k$, and zero out $Y_{\hat J}$ if there exists some $i,j,k$ such that the equality does not hold. 
+
+For convenience, we define the following notion of usefulness. 
+
+\begin{definition}[$Y$-Usefulness]
+    Given a level-$\lvl$ triple $X_I Y_J Z_K$ and a level-1 block $Y_{\hat J}\in Y_J$, we say $Y_{\hat J}$ is \emph{useful} for $X_I Y_J Z_K$ if $\split(\hat J, S_{i, j, k}) = \splres_{\itY, i, j, k}$ for every $i, j, k$. 
+\end{definition}
+
+Using the above definition, this step is equivalent to zeroing out every level-1 block $Y_{\hat J}$ that is not useful for the unique triple containing it. We call the remaining tensor after this step $\TYUseful$. 
+
+\subsection{\texorpdfstring{\boldmath$Z$}{Z}-Compatibility Zero-Out}
+
+After $Y$-compatibility zero-outs, every level-$1$ $Y$-block $Y_{\hat{J}}\in Y_J$ must be in a unique level-$\lvl$ triple $X_IY_JZ_K$ and the same holds for every level-$1$ $X$-block $X_{\hat I}$ as well. The goal of this step is to zero out some level-$1$ $Z$-blocks $Z_{\hat{K}}$ so that every level-$1$ $Z$-block is also in a unique level-$\ell$ triple. We note that this step is similar to the compatibility zero-out and usefulness zero-out steps in~\cite{VXXZ24} and \cref{def:global:Z-compatibility,def:global:Z-useful} are identical to the definition of compatibility and usefulness respectively in \cite{VXXZ24}.
+
+\subsubsection{\texorpdfstring{\boldmath$Z$}{Z}-Compatibility Zero-Out I}
+
+Given any level-1 block $Z_{\hat K} \in Z_K$, we zero out $Z_{\hat K}$ if there exists a $k$ such that $\split(\hat K, S_{*,*,k}) \ne \splresavg_{\itZ, *,*,k}$. We call the obtained tensor $\TZComp$.
+
+Next, we are ready to define compatibility for level-$1$ $Z_{\hat K}$ blocks.
+
+
+\begin{definition}[$Z$-Compatibility]
+  \label{def:global:Z-compatibility}
+  Given a level-$\ell$ triple $X_I Y_J Z_K$ and a level-$1$ $Z$-block $Z_{\hat K}\in Z_K$, we say that $Z_{\hat K}$ is \emph{compatible} with $X_I Y_J Z_K$ if the following hold:
+  \begin{enumerate}
+  \item 
+    \label{item:global:Z-compatibility1} For every $(i, j, k) \in \mathbb{Z}_{\ge 0}^3$ with $i + j + k = 2^{\lvl}$, $i = 0$ or $j = 0$, there is $\split(\hat K, S_{i,j,k}) = \splres_{\itZ,i,j,k}$.
+  \item
+    \label{item:global:Z-compatibility2}
+    For every index $k \in \{0, 1, \ldots, 2^\lvl\}$, $\split(\hat K, S_{*,*,k}) = \splresavg_{\itZ, *,*,k}$.
+  \end{enumerate}
+\end{definition}
+
+\begin{claim}[{\cite[Claim 5.9]{VXXZ24}}]
+\label{cl:global:Z-compatible}
+  In $\TZComp$, for every level-1 block triple $X_{\hat I}Y_{\hat J}Z_{\hat K}$ and the level-$\lvl$ block triple $X_I Y_J Z_K$ that contains it, $Z_{\hat K}$ is compatible with $X_I Y_J Z_K$.
+\end{claim}
+
+\subsubsection{\texorpdfstring{\boldmath$Z$}{Z}-Compatibility Zero-Out II: Unique Triple}
+
+Now in $\TZComp$, every level-$1$ $Z$-block $Z_{\hat K}$ is compatible with the level-$\lvl$ triple $X_I Y_J Z_K$ containing it, but there can be multiple level-$\lvl$ triples containing the level-$1$ block $Z_{\hat K}$. So in this step, we zero out $Z_{\hat K}$ if it is compatible with more than one level-$\lvl$ triple. Then the remaining tensor satisfies the property that every level-$1$ $Z_{\hat K}$ is contained in a unique level-$\lvl$ triple, and $Z_{\hat K}$ is compatible with that triple.
+
+\subsubsection{\texorpdfstring{\boldmath$Z$}{Z}-Usefulness Zero-Out}
+
+For convenience, we also define the notion of usefulness for $Z$-blocks. 
+
+\begin{definition}[$Z$-Usefulness]\label{def:global:Z-useful}
+Given a level-$\lvl$ triple $X_I Y_J Z_K$ and a level-1 block $Z_{\hat K} \in Z_K$, we say that $Z_{\hat K}$ is \emph{useful} for $X_I Y_J Z_K$ if $\split(\hat K, S_{i,j,k}) = \splres_{\itZ,i,j,k}$ for every $i, j, k$. 
+\end{definition}
+
+We zero out every level-1 block $Z_{\hat K}$ that is not useful for the unique triple containing it and call the remaining tensor $\TZUseful$.
+
+\subsection{Fixing Holes}
+\label{sec:global:fix-holes}
+
+At this stage, the subtensor of the remaining tensor $\TZUseful$ over $X_I Y_J Z_K$ is a subtensor of the following tensor 
+\[ \mathcal{T}^* = \bigotimes_{i+j+k = 2^\lvl} T_{i,j,k}^{\otimes A_1 \cdot \alpha(i, j, k) \cdot n} [\splres_{\itX, i, j, k}, \splres_{\itY, i, j, k}, \splres_{\itZ, i, j, k}], \]
+i.e., it is the level-$\lvl$ interface tensor with parameter list 
+\[ \left\{ \bk{ A_1 \cdot \alpha(i, j, k) \cdot n, i, j, k, \splres_{\itX, i, j, k}, \splres_{\itY, i, j, k}, \splres_{\itZ, i, j, k} } \right\}_{i + j + k = 2^{\lvl}}. \]
+More precisely:
+
+
+
+\begin{claim}
+  \label{cl:global:after-unique-triple-zero-out}
+  For any level-$\lvl$ block triple $X_I Y_J Z_K$ contained in $\THash$, the subtensor of $\TZUseful$ restricted to the level-$\ell$ blocks $X_I, Y_J, Z_K$ is a subtensor of $\T^*$, where the missing variables in this subtensor are exactly those level-1 blocks $Y_{\hat J}$ that are compatible with multiple level-$\lvl$ triples in $\TYComp$ and level-1 blocks $Z_{\hat K}$ that are compatible with multiple level-$\lvl$ triples in $\TZComp$.
+\end{claim}
+
+\begin{proof}
+
+We first show that for any level-$\ell$ block triple $X_IY_JZ_K$ in $\THash$, $\TZUseful|_{X_IY_JZ_K}$ is a subtensor of $\T^*$. Note that we already have 
+\[\THash \big|_{X_IY_JZ_K} \equiv \bigotimes_{i+j+k = 2^\ell} T_{i,j,k}^{\otimes A_1\cdot \alpha(i,j,k)\cdot n},\]
+so it suffices to show that all the level-1 triples $X_{\hat I} Y_{\hat J} Z_{\hat K}$ remaining in $\TZUseful$ satisfy the following for all $i,j,k$:
+\begin{enumerate}
+    \item $\split(\hat{I}, S_{i,j,k}) = \splres_{\itX, i,j,k}$, \label{item:global:after-unique:X}
+    \item $\split(\hat{J}, S_{i,j,k}) = \splres_{\itY, i,j,k}$, \label{item:global:after-unique:Y}
+    \item $\split(\hat{K}, S_{i,j,k}) = \splres_{\itZ, i,j,k}$. \label{item:global:after-unique:Z}
+\end{enumerate}
+Note that \cref{item:global:after-unique:X} is automatically satisfied due to the step in $Y$-compatibility zero-out, since we have zeroed out any level-1 $X_{\hat I}\in X_{I}$ with $i,j,k$ such that $\split(\hat{I}, S_{i,j,k}) \ne \splres_{\itX,i,j,k}$. \cref{item:global:after-unique:Y} is satisfied due to $Y$-usefulness zero-out and \cref{item:global:after-unique:Z} is satisfied due to $Z$-usefulness zero-out. Thus, $\TZUseful|_{X_IY_JZ_K}$ is a subtensor of $T^*$.
+
+Now we analyze what the missing $Y$-variables are. Note that for level-1 $Y_{\hat J}$ blocks, we have enforced the following conditions:
+\begin{enumerate}[label=(\arabic*)]
+\item  In $Y$-compatibility zero-out I, we enforce that $\split(\hat{J}, S_{*,j,*}) = \splresavg_{\itY,*,j,*}$.
+\item  In $Y$-compatibility zero-out II, we enforce that each $\hat{J}$ is compatible with a unique level-$\ell$ triple.
+\item In $Y$-usefulness zero-out, we enforce that $\split(\hat{J}, S_{i,j,k}) = \splres_{i,j,k}$ for every $i,j,k$.
+\end{enumerate}
+We claim that condition (3) is strictly stronger than condition (1), because by definition, (3) implies
+\begin{align*}
+    \Split(\hat{J}, S_{*,j,*}) 
+    &= \frac{1}{\sum_{i,k}\alpha(i,j,k)}\sum_{i+k = 2^\ell - j} \alpha(i,j,k)\cdot \Split(\hat{J}, S_{i,j,k})\\
+    &= \frac{1}{\sum_{i,k}\alpha(i,j,k)}\sum_{i+k = 2^\ell - j} \alpha(i,j,k)\cdot \splres_{\itY, i,j,k}\\
+    &= \splresavg_{\itY,*,j,*}.
+\end{align*}
+Also, enforcing condition (3) does not create missing $Y$-variables, as it is enforcing the necessary complete split distribution condition in the definition of $\T^*$. Thus, the missing variables are exactly due to enforcing condition (2), i.e., the level-1 $Y_{\hat J}$ blocks that are compatible with more than one level-$\ell$ triple. Similarly, the missing $Z$ variables are exactly those level-1 $Z_{\hat K}$ blocks that are compatible with more than one level-$\ell$ triple.
+\end{proof}
+
+Furthermore, observe that $\TZUseful\vert_{X_I Y_J Z_K}$ is level-1-independent for different block triples $X_I Y_J Z_K$: The $X$-blocks are level-$\lvl$-independent after the zero-out in the asymmetric hashing step; for $Y$ and $Z$-blocks, by \cref{cl:global:Y-compatible,cl:global:Z-compatible}, each level-1 block is compatible with all the level-$\lvl$ triples containing it, and we zeroed out all level-1 $Y$ and $Z$-blocks that are compatible with multiple level-$\lvl$ triples, so the remaining level-1 $Y$ and $Z$-blocks belong to unique level-$\lvl$ triples. As a result, 
+\[
+  \TZUseful \, = \bigoplus_{X_I Y_J Z_K \; \textup{remaining}} \TZUseful \big\vert_{X_I Y_J Z_K}
+  \numberthis \label{eq:T'''_as_direct_sum}
+\]
+is a direct sum of broken copies of $\T^*$.
+
+To fix the holes, we need to first bound the fraction of holes in the broken copies of $\T^*$ contained in $\TZUseful$. Similar to the analysis in \cite{VXXZ24}, we introduce the notion of \emph{typicalness} for level-$1$ $Y$-blocks and $Z$-blocks and define the values $\pcompY$ and $\pcompZ$ respectively. Previously, the notion of typicalness and $\pcomp$ were only defined with respect to level-$1$ $Z_{\hat K}$ blocks. This is because previously only level-1 $Z_{\hat K}$ blocks could become holes in the remaining tensor. However, in our case both level-$1$ $Y_{\hat{J}}$ blocks and $Z_{\hat K}$ blocks can become holes, so we need to define similar notions for $Y_{\hat J}$ blocks accordingly. 
+
+\begin{definition}[$Y$-Typicalness]
+  A level-1 $Y$-block $Y_{\hat{J}}$ in a level-$\lvl$ $Y$-block $Y_J$ is \emph{typical} if $\split(\hat J, S_{*,j,*}) = \splresavg_{\itY,*,j,*}$ for every $j$. When $Y_J$ is consistent with $\alphy$, this condition is equivalent to $\split(\hat J, [A_1 n]) = \splavg{\itY}$.
+\end{definition}
+
+\begin{definition}[$Z$-Typicalness]
+  A level-1 $Z$-block $Z_{\hat{K}}$ in a level-$\lvl$ $Z$-block $Z_K$ is \emph{typical} if $\split(\hat K, S_{*,*,k}) = \splresavg_{\itZ,*,*,k}$ for every $k$. When $Z_K$ is consistent with $\alphz$, this condition is equivalent to $\split(\hat K, [A_1 n]) = \splavg{\itZ}$.
+\end{definition}
+
+Then we can define the values $\pcompY$ and $\pcompZ$ as the probability of a typical level-$1$ $Y_{\hat J}$-block (resp.\ $Z_{\hat K}$-block) being compatible with a random level-$\ell$ triple $X_IY_JZ_K$ where $\hat J\in J$ (resp.\ $\hat K\in K$).
+
+\begin{definition}[$\pcompY$]
+For a fixed $Y_J$ and a fixed typical $Y_{\hat{J}} \in Y_J$, $\pcompY$ is the probability of $Y_{\hat J}$ being compatible with a uniformly random block triple $X_I Y_J Z_K$ consistent with $\alpha$.
+\end{definition}
+
+\begin{definition}[$\pcompZ$]
+For a fixed $Z_K$ and a fixed typical $Z_{\hat{K}} \in Z_K$, $\pcompZ$ is the probability of $Z_{\hat K}$ being compatible with a uniformly random block triple $X_I Y_J Z_K$ consistent with $\alpha$.
+\end{definition}
+
+For any two different typical level-$1$ blocks $Y_{\hat J}\in Y_J$ and $Y_{\hat J '}\in Y_{J'}$, their level-$1$ complete split distributions are the same. It is not difficult to see that $\pcompY$ defined using $Y_{\hat J}$ is the same as $\pcompY$ defined using $Y_{\hat J'}$. This implies that the definition of $\pcompY$ is not dependent on the choice of the level-$1$ block $Y_{\hat J}$, so it is well-defined. The same holds for $\pcompZ$ due to the same reasoning.
+
+
+\begin{claim}
+The value of $\pcompY$ is 
+\[
+2^{(\eta_\itY - H(\splresavg_{\itY, *, *, *}) + H(\alpha_\itY)) \cdot A_1 n \pm o(n) },
+\]
+where we recall 
+\[\eta_\itY = \sum_{i,j,k \,:\, k = 0} \alpha(i,j,k) \cdot H(\splres_{\itY, i,j,k}) + \sum_{j}\alpha(*,j,\+)\cdot H(\splresavg_{\itY,*,j,\+}).\]
+\end{claim}
+
+\begin{proof}
+We define the following two quantities:
+\begin{enumerate}
+
+    \item[($P$)] The number of tuples $(I, J, K, \hat{J})$ where $X_I Y_J Z_K$ is consistent with $\alpha$, $Y_{\hat J} \in Y_J$, and $Y_{\hat J}$ is typical. 
+    
+    
+    \item[($Q$)] The number of tuples $(I, J, K, \hat{J})$ where $X_I Y_J Z_K$ is consistent with $\alpha$, $Y_{\hat J} \in Y_J$, and $Y_{\hat J}$ is typical, and additionally $Y_{\hat J}$ is compatible with the triple $X_I Y_J Z_K$.
+
+\end{enumerate}
+Notice that by definition and by symmetry of different choices of $Y_{\hat J}$ and $Y_J$, $\pcompY = Q/P$.
+
+The quantity $P$ is simple to calculate, as it is the number of block triples $X_I Y_J Z_K$ consistent with $\alpha$ (this quantity is $2^{H(\alpha) \cdot A_1 n \pm o(n)}$) times the number of typical $Y_{\hat J}$ contained in every $Y_J$. The total number of typical $Y_{\hat J}$ that is contained in some $Y_J$ consistent with $\alpha_\itY$ is $2^{H(\splresavg_{\itY, *,*,*}) \cdot A_1 n \pm o(n)}$. These $Y_{\hat J}$ are evenly distributed among all $Y_J$ consistent with $\alpha_\itY$, so each $Y_J$ contains $2^{(H(\splresavg_{\itY, *,*,*}) - H(\alpha_\itY)) \cdot A_1 n \pm o(n)}$ typical $Y_{\hat{J}}$. Overall, 
+$$P = 2^{(H(\alpha) + H(\splresavg_{\itY, *,*,*}) - H(\alpha_\itY)) \cdot A_1 n \pm o(n)}. $$
+
+
+Next, we consider how to compute $Q$. Similar to the alternative definition of compatibility in the proof of Claim 5.14 in \cite{VXXZ24}, we have the following claim:
+\begin{claim}
+    Given a level-$\ell$ triple $X_IY_JZ_K$ that is consistent with $\alpha$, a level-$1$ block $Y_{\hat J}$ with $\hat J\in J$ is compatible with $X_IY_JZ_K$ if and only if the following holds:
+
+    \begin{enumerate}
+        \item For every $(i,j,k)\in \Z_{\ge 0}^3$ satisfying $i+j+k = 2^\ell$ and $k = 0$, $\split(\hat{J}, S_{i,j,k}) = \splres_{\itY,i,j,k}$.
+
+        \item For $j\in \{0,\dots, 2^\ell\}$, $\split(\hat J, S_{*,j,\+}) = \splresavg_{\itY,*,j,\+}$ where $S_{*,j,\+} = \bigcup_{i \ge 0, k>0} S_{i,j,k}$.
+    \end{enumerate}
+\end{claim}
+We omit the proof, since it is similar to the proof of the equivalence between two definitions of compatibility in the proof of Claim 5.14 in \cite{VXXZ24}.
+
+Fix some $X_I Y_J Z_K$ that is consistent with $\alpha$, $\{S_{i, j, 0}\}_{i, j} \cup \{S_{*, j, \+}\}_{j}$ is a partition of $[A_1 n]$, and we can consider the possibilities of $\hat{J}$ on each of these parts. For $S_{i, j, 0}$, the number of possibilities of $\hat{J}$ is $2^{H(\splres_{\itY, i, j, 0}) \cdot \alpha(i, j, 0) \cdot A_1 n \pm o(n)}$, as we must have $\split(\hat{J}, S_{i,j,0}) = \splres_{\itY,i,j,0}$. For $S_{*, j, \+}$, the number of possibilities of $\hat{J}$ is $2^{H(\splresavg_{\itY, *, j, \+}) \cdot \alpha(*, j, \+) \cdot A_1 n \pm o(n)}$, as we must have $\split(\hat J, S_{*,j,\+}) = \splresavg_{\itY,*,j,\+}$. Clearly, by combining each set of possibilities from each part, the resulting $\hat{J}$ is typical. The total number of possible $\hat{J}$ for a fixed triple $X_I Y_J Z_K$ is thus
+\[
+2^{(\sum_{i + j = 2^\l} H(\splres_{\itY, i, j, 0}) \cdot \alpha(i, j, 0) + \sum_j H(\splresavg_{\itY, *, j, \+}) \cdot \alpha(*, j, \+) ) A_1 n \pm o(n)} = 2^{\eta_\itY A_1 n \pm o(n)}. 
+\]
+Therefore, 
+\[
+Q = 2^{\left(H(\alpha) + \eta_\itY\right) A_1 n\pm o(n)}.
+\]
+Finally, 
+\[
+\pcompY = Q / P = 2^{(\eta_\itY - H(\splresavg_{\itY, *, *, *}) + H(\alpha_\itY)) \cdot A_1 n \pm o(n) }.
+\qedhere
+\]
+\end{proof}
+
+\begin{claim}[{\cite[Claim 5.14]{VXXZ24}}]
+  The value of $\pcompZ$ is
+  $$2^{\left(\lambda_\itZ - H(\splavg{\itZ}) + H(\alphz)\right) A_1 \cdot n \pm o(n)}, $$
+  where we recall that 
+  \[
+    \lambda_\itZ = \sum_{i, j, k \,:\, i = 0 \textup{ or } j = 0} \alpha(i, j, k) \cdot H(\splres_{\itZ, i, j, k}) + \sum_k \alpha(\+, \+, k) \cdot H(\splresavg_{\itZ, \+, \+, k}).
+  \]
+\end{claim}
+
+\begin{claim}[Essentially {\cite[Claim 5.16]{VXXZ24}}]
+  \label{cl:global:prob-of-holes}
+  For every $b \in B$, every level-$\lvl$ block triple $X_I Y_J Z_K$ consistent with $\alpha$, and every typical $Z_{\hat{K}} \in Z_K$, the probability that $Z_{\hat{K}}$ is compatible with multiple triples in $\TZComp$ is at most
+  \[ \frac{\numalpha \cdot \pcompZ}{\numzblock \cdot M_0}, \]
+  conditioned on $\hashx(I) = \hashy(J) = \hashz(K) = b$.
+
+  Similarly,  for every $b \in B$, every level-$\lvl$ block triple $X_I Y_J Z_K$ consistent with $\alpha$, and every typical $Y_{\hat{J}} \in Y_J$, the probability that $Y_{\hat{J}}$ is compatible with multiple triples in $\TYComp$ is at most
+  \[ \frac{\numalpha \cdot \pcompY}{\numyblock \cdot M_0}, \]
+  conditioned on $\hashx(I) = \hashy(J) = \hashz(K) = b$.
+\end{claim}
+
+Initially, in \cref{eq:global:initial-M0-bound} we required $M_0 \ge 8\cdot \frac{\numtriple}{\numxblock}$. Now we finalize all constraints on $M_0$, and set 
+\begin{align} \label{eq:hashmodulus}
+M_0 & = \max\left\{8\cdot \frac{\numtriple}{\numxblock}, \;
+\frac{\numalpha \cdot \pcompY}{\numyblock} \cdot 80 N, \;
+\frac{\numalpha \cdot \pcompZ}{\numzblock} \cdot 80 N\right\} \\ 
+& = 2^{\max\{H(\alpha)+P_\alpha - H(\alpha_\itX), \; \eta_\itY - H(\splresavg_{\itY, *, *, *}) + H(\alpha), \; \lambda_\itZ - H(\splresavg_{\itZ, *, *, *}) + H(\alpha) \} \cdot A_1 n \pm o(n)}.
+\end{align}
+For every $b \in B$ and every level-$\lvl$ block triple $X_I Y_J Z_K$ consistent with $\alpha$ that is hashed to bucket $b$ in asymmetric hashing, we consider the probability that it remains in $\TZUseful$ and $\TZUseful \vert_{X_I Y_J Z_K}$ is a copy of $\T^*$ with a small number of holes. 
+
+First, by \cref{item:lem:more-asym-hash:item2} in \cref{lem:more-asym-hash}, the level-$\lvl$ block $X_I Y_J Z_K$ remains with probability at least $\frac{3}{4}$. By \cref{cl:global:prob-of-holes}, the expected fractions of holes for level-1 $Z$-blocks is at most $\frac{\numalpha \cdot \pcompZ}{\numzblock \cdot M_0} \le \frac{1}{80 N}$. By Markov's inequality, this fraction exceeds $\frac{1}{8N}$ with probability $\le 1/10$. The same applies to the fraction of holes of $Y$-variables. Therefore, by union bound, with constant probability, the level-$\lvl$ block $X_I Y_J Z_K$ remains and $\TZUseful \vert_{X_I Y_J Z_K}$ is a broken copy of $\T^*$ whose fraction of holes is $\le \frac{1}{8N}$ in all three dimensions. The expected number of such $X_I Y_J Z_K$ is $\numalpha \cdot M^{-1 - o(1)}$, so in expectation, we obtain $\numalpha \cdot M^{-1 - o(1)}$ independent broken copies of $\T^*$ with $\le \frac{1}{8N}$ fraction of holes, and by \cref{thm:fix-holes}, we can degenerate them into $\numalpha \cdot M^{-1 - o(1)}$ unbroken copies of $\T^*$. 
+
+\subsection{Summary}
+
+In conclusion, the above algorithm degenerates 
+$\bigbk{\CW_q^{\otimes 2^{\lvl - 1}}}^{\otimes A_1 \cdot n}$ into 
+\[\numalpha \cdot M_0^{-1-o(1)} \ge 2^{A_1 n \cdot \min\BK{H(\alphx^{(1)}) - P_\alpha^{(1)}, \; H(\splavg{\itY}^{(1)}) - \eta_\itY^{(1)}, \;  H(\splavg{\itZ}^{(1)}) - \lambda_\itZ^{(1)}} - o(n)}\]
+independent copies of a level-$\lvl$ interface tensor $\T^*$ with parameter list
+\[ \left\{ \bk{ n \cdot A_1 \cdot \alpha^{(1)}(i, j, k), \, i, j, k, \, \splres^{(1)}_{\itX, i, j, k}, \splres^{(1)}_{\itY, i, j, k}, \splres^{(1)}_{\itZ, i, j, k} } \right\}_{i + j + k = 2^{\lvl}}. \]
+
+
+In region $r\in [6]$, let $\pi_r: \{X,Y,Z\}\to \{X,Y,Z\}$ be the $r$-th permutation in the lexicographic order and we perform the same procedure with $\pi_r(X)$-blocks in place of  $X$-blocks, $\pi_r(Y)$-blocks in place of $Y$-blocks, and $\pi_r(Z)$-blocks in place of $Z$-blocks. Note that we have described the procedure in the first region which corresponds to the identity permutation. In the end, we take the tensor product over the output tensor of the algorithm over all $6$ regions.
+
+

@@ -1,0 +1,289 @@
+\section{Preliminaries}
+\label{sec:prelim}
+
+We use by now standard notation as in \cite{AlmanW21,duan2023,VXXZ24}. The experienced reader may skip this section, as the definitions and notation are the same as in prior work.
+
+\subsection{Tensors and Tensor Operations}
+
+
+\paragraph{Tensors.} 
+We deal with tensors of order $3$ which can be viewed as either $3$-dimensional arrays or as trilinear polynomials. We consider the latter representation:
+
+A tensor $T$ over variable sets $X = \midBK{x_1, \ldots, x_{|X|}}$, $Y = \midBK{y_1, \ldots, y_{|Y|}}$, $Z = \midBK{z_1, \ldots, z_{|Z|}}$, and field $\F$ is a trilinear form
+\[
+  T = \sum_{i=1}^{|X|} \sum_{j=1}^{|Y|} \sum_{k=1}^{|Z|} a_{i,j,k} \cdot x_i y_j z_k,
+\]
+where all $a_{i,j,k}$ are from $\F$. 
+
+
+
+All tensors in this paper have all their entries $a_{i,j,k} \in \midBK{0, 1}$.
+As any field $\F$ has a $0$ and a $1$, all tensors in the paper can be considered to be over any $\F$. 
+
+
+In the following, assume $T$ is a tensor over $X = \midBK{x_1, \ldots, x_{|X|}}$, $Y = \midBK{y_1, \ldots, y_{|Y|}}$, $Z = \midBK{z_1, \ldots, z_{|Z|}}$ and $T'$ is a tensor over $X' = \midBK{x'_1, \ldots, x'_{|X'|}}$, $Y' = \midBK{y'_1, \ldots, y'_{|Y'|}}$, $Z' = \midBK{z'_1, \ldots, z'_{|Z'|}}$, written as
+\[
+  T = \sum_{i=1}^{|X|} \sum_{j=1}^{|Y|} \sum_{k=1}^{|Z|} a_{i,j,k} \cdot x_i y_j z_k, \qquad
+  T' = \sum_{i=1}^{|X'|} \sum_{j=1}^{|Y'|} \sum_{k=1}^{|Z'|} b_{i,j,k} \cdot x'_i y'_j z'_k,
+\]
+\paragraph{Tensor operations.} 
+We define the sum, direct sum, and Kronecker product of two tensors $T$ and $T'$:
+\begin{itemize}
+\item The \emph{sum} $T + T'$ is only defined when both tensors are over the same variable sets $(X, Y, Z) = (X', Y', Z')$. $T+T'$ is the tensor defined by the sum of the two polynomials defining $T$ and $T'$:
+  \[
+    T + T' = \sum_{i=1}^{|X|} \sum_{j=1}^{|Y|} \sum_{k=1}^{|Z|} (a_{i,j,k} + b_{i,j,k}) \cdot x_i y_j z_k.
+  \]
+\item 
+The \emph{direct sum} $T \oplus T'$ is the sum $T+T'$ when the variable sets of $T$ and $T'$ are disjoint. In this case, $T'$ and $T'$ are said to be \emph{independent}.
+
+If $T$ and $T'$ share variables, we first relabel their variables so that the variable sets are disjoint and then $T \oplus T'$ is the sum of the two polynomials over new variables.
+
+
+
+
+
+
+We write $T^{\oplus n} \defeq \underbrace{T \oplus T \oplus \cdots \oplus T}_{n~\textup{copies}}$ to denote the sum of $n$ independent copies\footnote{This is often written as $n\odot T$.} of $T$.
+
+\item The \emph{Kronecker product} is defined as the tensor
+  \[
+    T \otimes T' = \sum_{i=1}^{|X|} \sum_{j=1}^{|Y|} \sum_{k=1}^{|Z|} \sum_{i'=1}^{|X'|} \sum_{j'=1}^{|Y'|} \sum_{k'=1}^{|Z'|} a_{i,j,k} \cdot b_{i', j', k'} \cdot (x_i, x'_{i'}) \cdot (y_j, y'_{j'}) \cdot (z_k, z'_{k'})
+  \]
+  over variable sets $X \times X'$, $Y \times Y'$, and $Z \times Z'$. We write $T^{\otimes n} \defeq \underbrace{T \otimes T \otimes \cdots \otimes T}_{n~\textup{times}}$ to denote the \emph{$n$-th tensor power} of $T$.
+\item We say $T$ and $T'$ are \emph{isomorphic}\footnote{Note that in the literature, a more general type of isomorphism is considered, where $T$ and $T'$ can be transformed into one another under arbitrary linear transformations between $X$ and $X'$, $Y$ and $Y'$, and $Z$ and $Z'$, or even more generally under degenerations.}, denoted by $T \equiv T'$, if $|X| = |X'|$, $|Y| = |Y'|$, $|Z| = |Z'|$, and there are permutations $\pi_\textit{X}, \pi_\textit{Y}, \pi_\textit{Z}$ over $[|X|], [|Y|], [|Z|]$ respectively, such that $a_{i,j,k} = b_{\pi_\textit{X}(i), \pi_\textit{Y}(j), \pi_\textit{Z}(k)}$ for all $i, j, k$. In other words, both tensors are equivalent up to a relabeling of the variables. 
+\end{itemize}
+
+
+\subsection{Tensor Rank}
+A tensor $T$ over $X, Y, Z$ has rank $1$ if there are some vectors $a,b,c$ of length $|X|,|Y|,|Z|$, respectively, so that 
+\[
+T=\Biggbk{\sum_{i = 1}^{|X|} a_{i}\cdot x_i}
+\Biggbk{\sum_{j = 1}^{|Y|} b_{j}\cdot y_j}
+\Biggbk{\sum_{k = 1}^{|Z|} c_{k}\cdot z_k}.
+\]
+
+For a tensor $T$ over $X, Y, Z$, the tensor rank $R(T)$ is defined to be the minimum integer $r\ge 0$ such that $T$ can be written as the sum of $r$ rank-$1$ tensors.
+The corresponding sum is called the \emph{rank decomposition} of $T$.
+
+
+Tensor rank satisfies subadditivity and submultiplicativity:
+
+\begin{itemize}
+    \item $R(T+T')\le R(T) + R(T')$.
+    \item $R(T\oplus T')\le R(T) + R(T')$.
+    \item $R(T\otimes T')\le R(T)\cdot R(T').$
+\end{itemize}
+
+The third item above implies that for all $m$, $R(T^{\otimes m})\leq R(T)^m$, and for many tensors (e.g., $2\times 2$ matrix multiplication) the inequality is strict. Due to Fekete's lemma, the following
+ \emph{asymptotic rank} $\Tilde{R}(T)$ is well-defined for every tensor $T$: 
+\[\Tilde{R}(T) \defeq \lim_{m\to \infty}\lpr{R(T^{\otimes m})}^{1/m}.\]
+The asymptotic rank is upper bounded by $R(T^{\otimes m})^{1/m}$ for any fixed integer $m > 0$.
+
+\subsection{Degenerations, Restrictions, Zero-outs}
+Let $T$ and $T'$ be tensors over a field $\F$, $T$ is over $X, Y, Z$, and $T'$ is over $X', Y', Z'$. 
+
+\paragraph{Degeneration.}
+Let $\F[\lambda]$ be the ring of polynomials of the formal variable $\lambda$. We say that $T'$ is a degeneration of $T$, written as $T \unrhd T'$, if there exists $\F[\lambda]$-linear maps 
+\begin{align*}
+    \phi_\itX &: \Span_{\F[\lambda]}(X)\to \Span_{\F[\lambda]}(X'),\\
+    \phi_\itY &: \Span_{\F[\lambda]}(Y)\to \Span_{\F[\lambda]}(Y'),\\
+    \phi_\itZ &: \Span_{\F[\lambda]}(Z)\to \Span_{\F[\lambda]}(Z'),
+\end{align*}
+and $d\in \N$ such that  
+\[T' = \lambda^{-d}\lpr{\sum_{i = 1}^{|X|}\sum_{j = 1}^{|Y|}\sum_{k = 1}^{|Z|}a_{i,j,k} \cdot \phi_\itX(x_i) \cdot \phi_\itY(y_j) \cdot \phi_\itZ(z_k)} + O(\lambda).\]
+
+If $T' \unrhd T$, then $\Tilde{R}(T')\le \Tilde{R}(T)$.
+
+\paragraph{Restriction.}
+Restriction is a special type of degeneration for the case where the maps $\phi_\itX, \phi_\itY, \phi_\itZ$ are $\F$-linear maps. More specifically, $T'$ is a restriction of $T$ if there exist $\F$-linear maps
+\begin{align*}
+    \phi_\itX &: \Span_{\F}(X)\to \Span_{\F}(X'),\\
+    \phi_\itY &: \Span_{\F}(Y)\to \Span_{\F}(Y'),\\
+    \phi_\itZ &: \Span_{\F}(Z)\to \Span_{\F}(Z'),
+\end{align*}
+such that
+\[T' = \sum_{i = 1}^{|X|}\sum_{j = 1}^{|Y|}\sum_{k = 1}^{|Z|}a_{i,j,k} \cdot \phi_\itX(x_i) \cdot \phi_\itY(y_j) \cdot \phi_\itZ(z_k).\]
+If $T'$ is a restriction of $T$, $R(T')\le R(T)$, and consequently $\Tilde{R}(T')\le \Tilde{R}(T)$.
+
+
+\paragraph{Zero-out.}
+
+The laser method utilizes a limited type of restriction called zero-out, namely the maps $\phi_\itX, \phi_\itY, \phi_\itZ$ set some variables to zero. More specifically, for subsets $X'\subseteq X$, $Y'\subseteq Y$, $Z'\subseteq Z$ we define the maps as 
+\[\phi_\itX(x_i) = \begin{cases}x_i & \text{If }x_i\in X',\\ 0 & \text{otherwise},\end{cases}\]
+and similarly for $\phi_\itY, \phi_\itZ$. The resulting tensor 
+\[T' = \sum_{i = 1}^{|X|}\sum_{j = 1}^{|Y|}\sum_{k = 1}^{|Z|}a_{i,j,k} \cdot \phi_\itX(x_i) \cdot \phi_\itY(y_j) \cdot \phi_\itZ(z_k) = \sum_{x_i\in X'}\sum_{y_j\in Y'}\sum_{z_k\in Z'}a_{i,j,k} \cdot x_iy_jz_k\]
+is called a zero-out of $T$. Throughout this paper, we use the notation $T' = T\vert_{X',Y',Z'}$ to denote the tensor $T'$ obtained from $T$ by setting the variables in $X\setminus X'$, $Y\setminus Y'$, $Z\setminus Z'$ to zero. In this case, we also call $T'$ the \emph{subtensor} of $T$ over $X', Y', Z'$.
+
+\subsection{Matrix Multiplication Tensors}
+
+For positive integers $a,b,c$, the $a\times b \times c$ matrix multiplication tensor $\ang{a,b,c}$ is a tensor over the variable sets $\{x_{ij}\}_{i\in [a], j\in [b]}, \{y_{jk}\}_{j\in [b],k\in[c]}, \{z_{ki}\}_{i\in [a],k\in [c]}$ defined as the tensor computing the $a\times c$ (transpose of the) product matrix
+$\{z_{ki}\}_{i\in [a], k\in [c]}$
+of an $a\times b$ matrix $\{x_{ij}\}_{i\in [a], j\in [b]}$ and $b\times c$ matrix $\{y_{jk}\}_{j\in [b], k\in [c]}$. Specifically, 
+\[\ang{a,b,c} = \sum_{i\in [a]}\sum_{j\in [b]}\sum_{k\in [c]} x_{ij} y_{jk} z_{ki}.\]
+Notice that the coefficient in front of $z_{ki}$ is the $(i,k)$ entry of the product of $x$ with $y$.
+It is not hard to check that $\ang{a,b,c}\otimes \ang{d,e,f} \equiv \ang{ad, be, cf}$.
+
+Following the recursive approach introduced by Strassen in \cite{strassen}, for any integer $q \ge 2$, if $R(\ang{q,q,q})\le r$, then one can use the rank decomposition of $\ang{q,q,q}$ to design an arithmetic circuit of size $O(n^{\log_q(r)})$ to multiply two $n \times n$ matrices. This motivates the definition of the \emph{matrix multiplication exponent} $\omega$ as follows:
+\[\omega \defeq \inf_{q \in \N, \, q \ge 2} \log_q (R(\ang{q,q,q})).\]
+Namely, for every $\eps > 0$, there exists an arithmetic circuit of size $O(n^{\omega + \eps})$ that computes the multiplication of two $n\times n$ matrices. Since $\ang{q,q,q}^{\otimes n} \equiv \ang{q^n, q^n, q^n}$, equivalently $\omega$ can be written in terms of the asymptotic rank of $\ang{q,q,q}$ as 
+\[\omega = \log_q (\Tilde{R}(\ang{q,q,q})).\]
+
+We also consider the arithmetic complexity of multiplying rectangular matrices of sizes $n^a\times n^b$ and $n^b\times n^c$ where $a,b,c \in \R_{\ge 0}$. We define $\omega(a,b,c)$ as 
+\[\omega(a,b,c) = \log_q\lpr{\Tilde{R}(\ang{q^a,q^b,q^c})}\]
+where $q \ge 2$ is a positive integer. This means that for any $\eps > 0$, there exists an arithmetic circuit of size $O(n^{\omega(a,b,c) + \eps})$ that computes the multiplication of an $n^a\times n^b$ matrix with an $n^b\times n^c$ matrix. 
+
+It is known that $\omega(a,b,c)=\omega(a,c,b)=\omega(c,a,b)$ so that the value remains the same for any permutation of the dimensions $a,b,c$.
+In this paper, we focus on bounds for $\omega(1,\kappa,1)$ for $\kappa > 0$. 
+
+\subsection{Sch\"onhage's Asymptotic Sum Inequality}
+
+From a bound $r$ on the rank of any $\ang{a,b,c}$ tensor, one can obtain an upper bound $\omega\leq 3\log_{abc}(r)$.
+ Sch\"onhage \cite{Schonhage81} extended this fact by showing that one can obtain an upper bound on $\omega$ using any upper bound on the asymptotic rank of a {\em direct sum of matrix multiplication tensors}:
+
+\begin{theorem}[Asymptotic Sum Inequality \cite{Schonhage81}]\label{thm:schonhage-ineq}
+For positive integers $r > m$ and $a_i, b_i,c_i$ for $i\in [m]$, if 
+\[\Tilde{R}\bk{\bigoplus_{i = 1}^m \ang{a_i,b_i,c_i}}\le r,\]
+then $\omega\le 3\tau$ where $\tau\in [2/3,1]$ is the solution to the equation
+\[\sum_{i = 1}^m (a_i\cdot b_i\cdot c_i)^\tau = r.\]
+\end{theorem}
+
+Analogously, the asymptotic sum inequality can also be used to obtain bounds on the rectangular matrix multiplication as follows.
+
+\begin{theorem}[Asymptotic Sum Inequality for $\omega(a,b,c)$ \cite{Schonhage81,blaser}]\label{thm:schonhage-ineq-rect}
+    Let $t, \, q > 0$ be positive integers and $a,b,c \ge 0$ , then
+   \[t\cdot q^{\omega(a,b,c)}\le \Tilde{R}\lpr{\bigoplus_{i = 1}^t \ang{q^a, q^b,q^c}}.\]
+\end{theorem}
+
+
+\subsection{The Coppersmith-Winograd Tensor}
+
+For a nonnegative integer $q\ge 0$, the Coppersmith-Winograd tensor $\CW_q$ over the variables $X = \{x_0,\dots, x_{q+1}\}$, $Y = \{y_0,\dots, y_{q+1}\}$, $Z = \{z_0,\dots, z_{q+1}\}$ is defined as
+\[\CW_q \defeq x_0y_0z_{q+1} + x_0y_{q+1}z_0 + x_{q+1}y_0z_0 + \sum_{i = 1}^q \lpr{x_0y_iz_i + x_iy_0z_i + x_iy_iz_0}.\]
+Coppersmith and Winograd \cite{cw90} showed that $\Tilde{R}(\CW_q) \le q+2$.
+
+Observe that 
+\[\CW_q \equiv \ang{1,1,q} + \ang{q,1,1} + \ang{1,q,1} + \ang{1,1,1}+\ang{1,1,1}+\ang{1,1,1},\]
+where unfortunately \say{$+$} is a sum and not a direct sum, so that Sch\"{o}nhage's theorem doesn't immediately apply.
+The goal of the laser method is to zero out variables in $\CW_q^{\otimes n}$ so that Sch\"{o}nhage's theorem can be applied.
+
+\subsection{Base Leveled Partition of \texorpdfstring{\boldmath $\CW_q$}{CW\_q}}
+
+Consider the $2^{\lvl-1}$-th tensor power of $\CW_q$ for $\lvl \ge 1$. For convenience, denote $T^{(\lvl)} \defeq \CW_q^{\otimes 2^{\lvl-1}}$. 
+
+Coppersmith and Winograd \cite{cw90}
+defined a partitioning of the variables of $\CW_q$ which is used in all following works including \cite{virgi12,AlmanW21,LeGall32power,duan2023}. 
+We call this the level-$1$ partition. More generally, we
+describe the leveled partition of $T^{(\lvl)}$ which also comes from \cite{cw90} and the subsequent works.
+
+
+\paragraph{Level-1 partition.} For $T^{(1)} = \CW_q$, its variable sets $X^{(1)}, Y^{(1)}, Z^{(1)}$ are partitioned into three parts
+\begin{align*}
+    X^{(1)} &= X^{(1)}_0 \sqcup X^{(1)}_1 \sqcup X^{(1)}_2 = \{x_0\}\sqcup \{x_1,\dots, x_q\}\sqcup \{x_{q+1}\},\\
+    Y^{(1)} &= Y^{(1)}_0 \sqcup Y^{(1)}_1 \sqcup Y^{(1)}_2 = \{y_0\}\sqcup \{y_1,\dots, y_q\}\sqcup \{y_{q+1}\},\\
+    Z^{(1)} &= Z^{(1)}_0 \sqcup Z^{(1)}_1 \sqcup Z^{(1)}_2 =  \{z_0\}\sqcup \{z_1,\dots, z_q\}\sqcup \{z_{q+1}\}.
+\end{align*}
+We  denote the subtensor $T^{(1)}\big\vert_{X^{(1)}_i, Y^{(1)}_j,Z^{(1)}_k}$ by $T_{i,j,k}^{(1)}$ and we call it a \emph{level-$1$ constituent tensor}. Note that $T^{(1)}_{i, j, k}$ is nonzero if and only if $i+j+k = 2$. In particular, we can write $\CW_q$ as a sum of constituent tensors as follows
+\[T^{(1)} = \CW_q = \sum_{\substack{i,j,k\ge 0\\ i+j+k = 2}} T_{i,j,k}^{(1)}.\]
+
+\paragraph{Level-\boldmath$\lvl$ partition.} For $T^{(\lvl)}=\CW_q^{\otimes 2^{\lvl-1}}$ with variable sets $X^{(\lvl)}, Y^{(\lvl)}, Z^{(\lvl)}$, the above level-$1$ partition on $T^{(1)}$ induces a natural partition on the variable sets $X^{(\lvl)}, Y^{(\lvl)}, Z^{(\lvl)}$ 
+where parts are indexed by $\{0, 1, 2\}$-sequences of length $2^{\lvl-1}$. Specifically, for the $X$ variables we get the partition
+\[X^{(\lvl)} = \bigsqcup_{(\hat{i}_1, \hat{i}_2, \ldots, \hat{i}_{2^{\lvl-1}}) \in \{0, 1, 2\}^{2^{\lvl-1}}}X^{(1)}_{\hat{i}_1} \otimes  X^{(1)}_{\hat{i}_2} \otimes \cdots \otimes X^{(1)}_{\hat{i}_{2^{\lvl-1}}}.\]
+The partitions for $Y$- and $Z$-variables are analogous. 
+
+
+Prior work starting with \cite{cw90} used partitions obtained from the above induced partitions by merging parts whose sequences indices sum to the same number.
+
+\[
+  X^{(\lvl)} = \bigsqcup_{i = 0}^{2^\lvl} X_i^{(\lvl)},
+  \qquad \textup{where} \quad
+  X_i^{(\lvl)} \defeq
+  \bigsqcup_{\substack{(\hat{i}_1, \hat{i}_2, \ldots, \hat{i}_{2^{\lvl-1}}) \in \{0, 1, 2\}^{2^{\lvl-1}}  \\\sum_t \hat{i}_t = i}}X^{(1)}_{\hat{i}_1} \otimes  X^{(1)}_{\hat{i}_2} \otimes \cdots \otimes X^{(1)}_{\hat{i}_{2^{\lvl-1}}}.
+\]
+This above partition of $T^{(\lvl)}$ is called the \emph{level-$\lvl$ partition}.
+One can also view this partition as a coarsening of the level-($\lvl-1$) partition via merging, i.e.,
+\[X_i^{(\lvl)} = \bigsqcup_{\substack{0 \le i' \le i \\ 0 \le i', i - i' \le 2^{\lvl - 1}}}X^{(\lvl-1)}_{i'} \otimes X^{(\lvl-1)}_{i-i'}.\]
+The variable sets $Y^{(\lvl)}$ and $Z^{(\lvl)}$ are partitioned similarly. 
+ 
+ Under the level-$\lvl$ partition, denote the subtensor $T^{(\lvl)} \big\vert_{X_i^{(\lvl)}, Y_j^{(\lvl)}, Z_k^{(\lvl)}}$ by $T^{(\lvl)}_{i, j, k}$ and call it a \emph{level-$\lvl$ constituent tensor}.
+ Call $X^{(\lvl)}_i, Y^{(\lvl)}_j, Z^{(\lvl)}_k$ level-$\lvl$ variable blocks. We omit the superscript $(\lvl)$ when $\lvl$ is clear from context.
+ 
+ Note that $T^{(\lvl)}_{i, j, k}\neq 0$ if and only if $i+j+k = 2^{\lvl}$. Thus:
+ 
+ \[T^{(\lvl)} = \CW_q^{\otimes 2^{\lvl-1}}= \sum_{\substack{i,j,k\ge 0\\ i+j+k = 2^{\lvl}}} T_{i,j,k}^{(\lvl)}.\]
+
+\subsection{Leveled Partition for Large Tensor Powers of \texorpdfstring{\boldmath $\CW_q$}{CW\_q}}
+
+In the laser method, we focus on a tensor power of $\CW_q$ in the form $(T^{(\lvl)})^{\otimes n} = (\CW_q)^{\otimes n\cdot 2^{\lvl-1}}$. We set $N \defeq n\cdot 2^{\lvl-1}$ and note that the leveled partition of $T^{(\lvl)}$ induces a partition on $(T^{\lvl})^{\otimes n}$. We recall some basic terminology and notation with respect to the leveled partition of $(T^{\lvl})^{\otimes n}$.
+
+\paragraph{Level-1 partition of \boldmath$(\CW_q)^{\otimes N}$.}
+In level-$1$, we view $(\CW_q)^{\otimes N}$ as the tensor $(T^{(1)})^{\otimes N}$ and consider the partition induced by the level-$1$ partition on $T^{(1)}$. Each level-$1$ $X$-variable block $X_{\hat{I}}$ is indexed by a sequence $\hat{I} = (\hat{I}_1,\dots, \hat{I}_N)$ of length $N$ in $\{0,1,2\}^N$. The variable block $X_{\hat I}$ is defined as 
+\[X_{\hat{I}} \defeq X_{\hat{I}_1}^{(1)} \otimes \dots \otimes X_{\hat{I}_N}^{(1)},\]
+where $X_{\hat I_t}^{(1)}$ for $t\in [N]$ is the level-$1$ partition of $T^{(1)}$. We call $X_{\hat{I}}$ a \emph{level-$1$ variable block} and $\hat{I}$ its \emph{level-$1$ index sequence}. The level-$1$ $Y$- and $Z$-variable blocks $Y_{\hat{J}}$ and $Z_{\hat{K}}$ are defined similarly for level-$1$ index sequences $\hat{J}, \hat{K}\in \{0,1,2\}^N$. Then notice that $X_{\hat{I}}, Y_{\hat{J}}, Z_{\hat{K}}$ form a nonzero subtensor of $(T^{(1)})^{\otimes N}$ if $\hat{I}_t + \hat{J}_t + \hat{K}_t = 2$ for all $t\in [N]$. Thus we write $(T^{(1)})^{\otimes N}$ as a sum of subtensors
+\[(T^{(1)})^{\otimes N} = \sum_{\substack{\hat{I}, \hat{J}, \hat{K}\in \{0,1,2\}^{N}\\ \hat{I}_t + \hat{J}_t + \hat{K}_t = 2\,\ \forall t\in [N]}} (T^{(1)})^{\otimes N} \big\vert_{X_{\hat{I}}, Y_{\hat{J}}, Z_{\hat{K}}}.\]
+For convenience, we use $X_{\hat{I}}Y_{\hat{J}}Z_{\hat{K}}$ to denote the subtensor $(T^{(1)})^{\otimes N}\big\vert_{X_{\hat{I}}, Y_{\hat{J}}, Z_{\hat{K}}}$ and we call $X_{\hat{I}}Y_{\hat{J}}Z_{\hat{K}}$ a \emph{level-$1$ triple}.
+
+\paragraph{Level-\boldmath$\lvl$ partition of $(\CW_q)^{\otimes N}$.}
+In level-$\lvl$, we view $(\CW_q)^{\otimes N}$ as the tensor $(T^{(\lvl)})^{\otimes n}$ where $n = N / 2^{\lvl - 1}$ and consider the partition induced by the level-$\lvl$ partition on $T^{(\lvl)}$. Each level-$1$ $X$-variable block $X_{I}$ is indexed by a sequence $I\in \{0,1,\dots, 2^{\lvl}\}^n$ of length $n$. The variable block $X_I$ is defined as 
+\[X_I \defeq  X_{I_1}^{(\lvl)}\otimes \dots \otimes X_{I_n}^{(\lvl)}\]
+where $X_{i}^{(\lvl)}$ ($0 \le i \le 2^{\lvl}$) is the $i$-th part in the level-$\lvl$ partition of $T^{(\lvl)}$. We call $X_{I}$ a \emph{level-$\lvl$ variable block} and $I$ its \emph{level-$\lvl$ index sequence}. The level-$\lvl$ $Y$- and $Z$-variable blocks $Y_{J}$ and $Z_{K}$ are defined similarly for level-$\lvl$ index sequences $J,K\in \{0,1,\dots, 2^{\lvl}\}^n$. Similarly, the level-$\lvl$ variable blocks $X_I, Y_J, Z_K$ form a nonzero subtensor of $(T^{(\lvl)})^{\otimes n}$ when $I_t + J_t + K_t = 2^\lvl$ for all $t\in [n]$. So we can write
+\[(T^{(\lvl)})^{\otimes n} = \sum_{\substack{I, J, K \in \{0,1,2^\lvl\}^{n} \\ I_t + J_t + K_t = 2^\lvl\,\ \forall t\in [N]}}(T^{(\lvl)})^{\otimes n}\big\vert_{X_I, Y_J, Z_K}.\]
+As in the level-$1$ partition, for convenience, we use the notation $X_I Y_J Z_K$ to denote the subtensor $(T^{(\lvl)})^{\otimes n}\vert_{X_I, Y_J, Z_K}$ and we call such $X_I Y_J Z_K$ a \emph{level-$\lvl$ triple.}
+
+In addition, note that since the level-$\lvl$ partition of $T^{(\lvl)}$ is a coarsening of the partition induced by the level-$1$ partition of $T^{(1)}$, a level-$1$ variable block $X_{\hat{I}}$ is contained in a level-$\lvl$ variable block $X_I$ if the sequence $I' = (I'_1,\dots, I'_n)$ formed by taking $I'_t = \sum_{i = 1}^{2^{\lvl-1}} \hat{I}_{(t-1)\cdot 2^{\lvl-1} + i}$ satisfies $I'_t = I_t$ for all $t\in [n]$. Namely, if taking the sum of consecutive length-$2^{\lvl-1}$ subsequences in $\hat{I}$ yields the sequence $I$, then $X_{\hat{I}}$ is contained in $X_I$. In this case, we use the notation $\hat{I}\in I$ and $X_{\hat{I}}\in X_I$.
+
+\subsection{Distributions and Entropy}
+We only consider distributions with a finite support. Let $\alpha$ be a distribution supported on a set $S$, i.e., we have $\alpha(s)\ge 0$ for all $s\in S$ and $\sum_{s\in S}\alpha(s) = 1$. The \emph{entropy} of $\alpha$, denoted as $H(\alpha)$, is defined as\[H(\alpha) \defeq - \sum_{\substack{s\in S\\ \alpha(s) > 0}}\alpha(s)\log \alpha(s), \]
+where the $\log$ has base $2$. 
+We use the following well-known combinatorial fact.
+\begin{lemma}
+  Let $\alpha$ be a distribution over the set $[s] = \{1,\dots, s\}$. Let $N > 0$ be a positive integer, then we have
+  \[\binom{N}{\alpha(1)N,\dots, \alpha(s)N}= 2^{N(H(\alpha) \pm o(1))}.\]
+\end{lemma}
+
+ For two distributions $\alpha$ and $\beta$ over the sets $S$ and $S'$ respectively, we define the joint distribution $\alpha \times \beta$ as the distribution over $S \times S' = \{(s,s') \mid s \in S, \, s' \in S'\}$ such that
+ \[(\alpha\times \beta) (s,s') = \alpha(s)\cdot \beta(s').\]
+  When $S$ and $S'$ are sets of integer sequences, we will instead define $\alpha \times \beta$ as a distribution over all integer sequences that can be obtained by concatenating one sequence in $S$ and one sequence in $S'$, such that 
+$$(\alpha \times \beta)(s \circ s') = \alpha(s) \cdot \beta(s'), $$
+where $s \circ s'$ denotes the concatenation of $s$ and $s'$. 
+
+\subsection{Complete Split Distributions}
+
+Motivated by the leveled partition of tensor powers of $\CW_q$, the complete split distribution is defined to characterize the level-$1$ variable blocks contained in level-$\lvl$ variable blocks. (Complete split distributions were first defined and used by \cite{VXXZ24}.)
+
+\begin{definition}[Complete Split Distribution]
+    A \emph{complete split distribution} for a level-$\lvl$ constituent tensor $T_{i,j,k}$ with $i+j+k=2^{\lvl}$ is a distribution on all length $2^{\lvl-1}$ sequences $(\hat{i}_1, \hat{i}_2, \ldots, \hat{i}_{2^{\lvl-1}}) \in \{0, 1, 2\}^{2^{\lvl-1}}$. 
+\end{definition}
+
+For a level-$1$ index sequence $\hat I \in \{0, 1, 2\}^{2^{\lvl-1} \cdot n}$, we say that it is \emph{consistent} with a complete split distribution $\splres$ if the proportion of any  index sequence $(\hat{i}_1, \hat{i}_2, \ldots, \hat{i}_{2^{\lvl-1}})$ in
+\[ \left\{ \bigbk{\hat{I}_{(t-1)\cdot 2^{\lvl - 1}+p}}_{p=1}^{2^{\lvl-1}} \;\middle|\; t \in [n] \right\} \]
+equals $\splres(\hat{i}_1, \hat{i}_2, \ldots, \hat{i}_{2^{\lvl-1}})$. Namely, for every $(\hat{i}_1,\dots, \hat{i}_{2^{\lvl-1}})\in \{0,1,2\}^{2^{\lvl-1}}$, we have
+\[\labs{\lcr{t \in [n] \mmid \bigbk{\hat{I}_{(t-1)\cdot 2^{\lvl - 1}+p}}_{p=1}^{2^{\lvl - 1}} = (\hat{i}_1,\dots, \hat{i}_{2^{\lvl-1}})}}  = \splres(\hat{i}_1, \hat{i}_2, \ldots, \hat{i}_{2^{\lvl-1}}) \cdot n.\]
+
+Notice that any level-1 index sequence $\hat{I}\in \{0,1,2\}^{2^{\lvl - 1}\cdot n}$ defines a complete split distribution by computing the proportion of each type of length-$2^{\lvl-1}$ consecutive chunks present in $\hat{I}$. More specifically, we have the following definition.
+
+\begin{definition}\label{def:split-hatI}
+    Given a level-1 index sequence $\hat{I}\in \{0,1,2\}^{2^{\lvl - 1}\cdot n}$, its complete split distribution over $(\hat{i}_1,\dots, \hat{i}_{2^{\lvl-1}})\in \{0,1,2\}^{2^{\lvl - 1}}$ is defined as
+    \[\split\bigbk{\hat{I}}\bigbk{\hat{i}_1,\dots, \hat{i}_{2^{\lvl-1}}} = \frac{1}{n}\cdot \labs{\lcr{t \in [n] \mmid \bigbk{\hat{I}_{(t-1)\cdot 2^{\lvl - 1}+p}}_{p=1}^{2^{\lvl - 1}} = \bigbk{\hat{i}_1,\dots, \hat{i}_{2^{\lvl-1}}}}}.\]
+    Given a subset $S\subseteq [n]$, we can define the complete split distribution over $(\hat{i}_1,\dots, \hat{i}_{2^{\lvl-1}})\in \{0,1,2\}^{2^{\lvl - 1}}$ given by $\hat{I}$ restricted to the subset $S$ as 
+    \[\split\bigbk{\hat{I}, S}\bigbk{\hat{i}_1,\dots, \hat{i}_{2^{\lvl-1}}} = \frac{1}{|S|}\cdot \labs{\lcr{t \in S \mmid \bigbk{\hat{I}_{(t-1)\cdot 2^{\lvl - 1}+p}}_{p=1}^{2^{\lvl - 1}} = \bigbk{\hat{i}_1,\dots, \hat{i}_{2^{\lvl-1}}}}}.\]
+\end{definition}
+
+Given two complete split distributions $\splres_1$ and $\splres_2$ over the length-$2^{\lvl-1}$ index sequences $\{0,1,2\}^{2^{\lvl - 1}}$, the $L_\infty$ distance between $\splres_1$ and $\splres_2$ is defined to be 
+\[\norm{\splres_1 - \splres_2}_\infty = \max_{\sigma\in \{0,1,2\}^{2^{\lvl-1}}}|\splres_1(\sigma) - \splres_2(\sigma)|.\]
+For any constant $\eps > 0$ and a fixed complete split distribution $\splres$, we say that a level-1 index sequence $\hat{I}\in \{0,1,2\}^{2^{\lvl - 1}\cdot n}$ is consistent with $\splres$ up to $\eps$ error if  $\midnorm{\split(\hat{I}) - \splres}_\infty \le \eps$. When the $\eps$ is clear from context, we say that $\hat{I}$ is \emph{approximately consistent} with $\splres$ if it is consistent with $\splres$ up to $\eps$ error.
+
+\begin{definition}
+    For a level-$\lvl$ constituent tensor $T_{i,j,k}$, an integer exponent $N$, a constant $\eps \ge 0$, and three complete split distributions $\splresX, \splresY, \splresZ$ for the $X$-, $Y$-, $Z$-variables respectively, we define
+    $$T_{i,j,k}^{\otimes N}[\splresX, \splresY, \splresZ,\eps] \defeq \sum_{\substack{\text{level-}1 \text{ triple } X_{\hat I}Y_{\hat J}Z_{\hat K} \textup{ in } T_{i,j,k}^{\otimes N} \\ \hat I \text{ approximately consistent with } \splresX \\ \hat J \text{ approximately consistent with } \splresY \\ \hat K \text{ approximately consistent with } \splresZ}} X_{\hat I} Y_{\hat J} Z_{\hat K}. $$
+    It is a subtensor of $T_{i,j,k}^{\otimes N}$ over all level-1 $X$-, $Y$-, $Z$-variable blocks that are approximately consistent with $\splresX$, $\splresY$, $\splresZ$, respectively. When $\eps = 0$, we will simplify the notation to $T_{i,j,k}^{\otimes N}[\splresX, \splresY, \splresZ]$.
+\end{definition}
+
+\subsection{Salem-Spencer Sets}
+In the hashing step of the laser method, we make use of the existence of a large subset of $\Z_M$ that avoids $3$-term arithmetic progressions, as given by Salem and Spencer \cite{salemspencer} and improved by Behrend \cite{behrend1946sets}.
+
+\begin{theorem}[\cite{behrend1946sets,elsholtz2024improving}]
+\label{thm:salemspencer}
+ For every positive integer $M > 0$, there exists a subset $B\subseteq \Z_M$ of size 
+ \[|B|\ge M\cdot e^{-O(\sqrt{\log M})} = M^{1-o(1)}\]
+ that contains no nontrivial $3$-term arithmetic progressions. Specifically, any $a,b,c\in B$ satisfy $a+b \equiv 2c \pmod M$ if and only if $a = b = c$.
+\end{theorem}

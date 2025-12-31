@@ -1,0 +1,61 @@
+\newcommand{\numgrow}{V}
+\newcommand{\numgrowl}[1][\l]{\numgrow_{#1}}
+\newcommand{\interl}[1][\l]{\T_{#1}}
+
+\section{Numerical Result}
+\label{sec:numerical}
+
+The way we combine theorems from previous sections to obtain numerical bounds on $\omega(1, \kappa, 1)$ is similar to previous works (e.g., \cite{VXXZ24}). Let $\l^* > 0$ be an integer denoting the highest level we hope to analyze, and let $N = 2^{\l^* - 1} \cdot n$. We repeatedly apply \cref{thm:global-stage-with-eps,thm:consituent_MM_terms,thm:constituent-stage-with-eps} to degenerate a direct sum of $2^{o(n)}$ copies of $\CW_q^{\otimes N} \equiv \bigbk{\CW_q^{\otimes 2^{\l^* - 1}}}^{\otimes n}$ into a direct sum of matrix multiplication tensors $\angbk{a, a^{\kappa}, a}$, shown in \cref{alg:framework}.
+
+\begin{figure}[ht]
+  \centering
+  \begin{tcolorbox}
+    \captionof{algocf}{Procedure of degeneration (similar to \cite{VXXZ24})}{\label{alg:framework}}
+    Let $\eps > 0$ be a fixed constant and $\l^* > 0$ be an integer.
+    \begin{enumerate}
+    \item Degenerate a direct sum of $2^{o(n)}$ independent copies of $\bigbk{\CW_q^{\otimes 2^{\l^* - 1}}}^{\otimes n}$ into $\numgrowl[\l^*]$ independent copies of a level-$\l^*$ $(\eps \cdot 3^{\l^*})$-interface tensor $\interl[\l^*]$, where the number of copies $\numgrowl[\l^*]$ and the parameter list of $\interl[\l^*]$ are given by \cref{thm:global-stage-with-eps} and \cref{prop:global-stage-no-eps}.
+    \item For each $\l = \l^*, \ldots, 2$:
+      \begin{itemize}
+      \item Degenerate \emph{every} $2^{o(n)}$ copies of the level-$\l$ $(\eps \cdot 3^{\l})$-interface tensor $\interl[\l]$ into a direct sum of $\numgrowl[\l - 1]$ copies of the Kronecker product of a level-$(\l - 1)$ $(\eps \cdot 3^{\l - 1})$-interface tensor $\interl[\l - 1]$ and a matrix multiplication tensor $\angbk{a_\l, b_\l, c_\l}$. The number of copies $\numgrowl[\l - 1]$, the parameter list of $\interl[\l - 1]$, and the size of the matrix multiplication tensor $\angbk{a_\l, b_\l, c_\l}$ are all given by \cref{thm:constituent-stage-with-eps} and \cref{prop:constituent-stage-no-eps}.
+      \end{itemize}
+    \item Degenerate the level-$1$ $3\eps$-interface tensor $\interl[1]$ into a matrix multiplication tensor $\angbk{a_1, b_1, c_1}$ according to \cref{thm:consituent_MM_terms}.
+    \item The above steps will produce a direct sum of $\numgrow \defeq \prod_{\l = 1}^{\l^*} \numgrowl[\l]$ copies of $\angbk{A, B, C} \equiv \bigotimes_{\l = 1}^{\l^*} \angbk{a_\l, b_\l, c_\l}$.
+    \end{enumerate}
+    Letting $n \to \infty$ and applying Sch{\"o}nhage's asymptotic sum inequality 
+    (\cref{thm:schonhage-ineq-rect}) on the above degeneration result in a bound on $\omega(1, \kappa, 1)$ which depends on $\eps$. Then, we let $\eps \to 0$ to obtain the bound $\omega(1, \kappa, 1) \le \omega'$, as long as
+    \[
+      \lim_{\eps \to 0} \lim_{n \to \infty} \numgrow^{1/n} \cdot \min\bigBK{A, B^{1/\kappa}, C}^{\omega'/n} \ge (q + 2)^{2^{\l^* - 1}}.
+      \numberthis \label{eq:asymptotic_sum_inequality_in_algorithm}
+    \]
+  \end{tcolorbox}
+  \vspace{-1.5em}
+\end{figure}
+
+\bigskip
+
+Every step of degeneration in \cref{alg:framework} takes a set of parameters, which includes the distribution $\alpha$ over constituent tensors, the fractions of tensor powers $A_1, \ldots, A_6$ assigned to six regions, etc. Given an assignment to these parameters, we can calculate
+\[
+  \lim_{\eps \to 0} \lim_{n \to \infty} \numgrowl^{1/n}, \quad \lim_{\eps \to 0} \lim_{n \to \infty} a_\l^{1/n}, \quad \lim_{\eps \to 0} \lim_{n \to \infty} b_\l^{1/n}, \quad \lim_{\eps \to 0} \lim_{n \to \infty} c_\l^{1/n}
+\]
+by \cref{thm:global-stage-with-eps,thm:consituent_MM_terms,thm:constituent-stage-with-eps}. One can substitute them into \eqref{eq:asymptotic_sum_inequality_in_algorithm} to verify a claimed bound on $\omega(1, \kappa, 1)$.
+
+\paragraph{Optimization.}
+
+Finding the set of parameters that leads to the best bound for $\omega(1, \kappa, 1)$ can be formulated as an optimization problem:
+\[
+  \begin{array}{cl}
+    \textup{minimize} & \qquad \omega' \\
+    \textup{subject to} & \textup{all constraints in \cref{thm:global-stage-with-eps,thm:consituent_MM_terms,thm:constituent-stage-with-eps}} \\
+                      & \displaystyle \lim_{\eps \to 0} \lim_{n \to \infty} \numgrow^{1/n} \cdot \min\bigBK{A, B^{1/\kappa}, C}^{\omega'/n} \ge (q + 2)^{2^{\l^* - 1}}.
+  \end{array}
+  \numberthis \label{eq:optimization_problem}
+\]
+To optimize \eqref{eq:optimization_problem}, we utilize the software package SNOPT \cite{SNOPT}, which employs a \emph{sequential quadratic programming (SQP)} algorithm. Although SNOPT does not guarantee finding the optimal solution of the optimization problem, any feasible solution that provides a reasonably good bound on $\omega(1, \kappa, 1)$ is acceptable.
+
+\cite[Section 8]{VXXZ24} mentioned several tricks in the optimization, including setting specific initial points, using the exponential form of Lagrange multiplier constraints, and transforming minimum functions into linear inequalities. We use all of them in the same way. See \cite{VXXZ24} for details.
+
+\paragraph{Numerical results.}
+
+We wrote a MATLAB \cite{MATLAB2022} program which uses SNOPT \cite{SNOPT} to solve the optimization problem \eqref{eq:optimization_problem}. By executing the program with various values of $\kappa$, we derived upper bounds for $\omega(1, \kappa, 1)$, as listed in \cref{table:result}. All these bounds were derived by analyzing $\CW_5^{\otimes 4}$, the fourth power\footnote{We have no doubt that analyzing the eighth power and beyond would yield further improvements. However, the optimization solvers are already very slow in solving our program for the 4th power, so solving the 8th power program seems infeasible, at least with the current solver.} of the CW tensor with $q = 5$. In particular, we showed that $\omega \le 2.371339$ and $\mu \le 0.527500$.\footnote{Unfortunately, we could not obtain a bound on $\alpha$ via SNOPT, as it crashed due to potential numerical instabilities: the number of parameters in the optimization problem is significantly larger than in previous works, hence the numerical errors accumulated more and crashed a subroutine in SNOPT.}
+The code and the sets of parameters are available at \url{https://osf.io/mw5ak/?view_only=5769f03789354793b61e11aac4dd85dd}.
+

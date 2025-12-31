@@ -1,0 +1,111 @@
+\section{Technical Overview}
+
+In this section, we give a high-level overview of recent algorithms for matrix multiplication and the new ideas we introduce in this paper for further improvement. We assume familiarity with notions related to tensors and matrix multiplication; the unfamiliar reader may want to read the preliminaries in Section~\ref{sec:prelim} below first. Afterward, in Section~\ref{sec:outline}, we give a more detailed overview of how we design our new algorithm.
+
+
+\subsection{The Laser Method and Asymptotic Sum Inequality}
+
+In order to design a matrix multiplication algorithm, using Sch{\"{o}}nhage's asymptotic sum inequality~\cite{Schonhage81}, it suffices to give an upper bound on the asymptotic rank of a direct sum of matrix multiplication tensors. However, directly bounding the rank of a matrix multiplication tensor is quite difficult (for example, even determining the rank of the tensor for multiplying $3 \times 3$ matrices is still an open problem today), and so algorithms since the work of Coppersmith and Winograd~\cite{cw90} have used an indirect approach:
+\begin{enumerate}
+    \item Start with the Coppersmith-Winograd tensor $\CW_q$, which is known to have minimal asymptotic rank.
+    \item Take a large Kronecker power $\CW_q^{\otimes n}$, which must therefore also have a small (asymptotic) rank.
+    \item \label{step3} Use the laser method to show that $\CW_q^{\otimes n}$ has a \emph{zeroing out}\footnote{If $T$ is a tensor over $X,Y,Z$, a zeroing out of $T$ is a tensor obtained by picking subsets $X' \subseteq X$, $Y' \subseteq Y$, $Z' \subseteq Z$, and restricting $T$ to only those subsets.} to a large direct sum $S$ of matrix multiplication tensors.
+    \item Since zeroing out cannot increase the tensor rank, this shows that $S$ has a small (asymptotic) rank, and then we can apply Sch{\"{o}}nhage's asymptotic sum inequality.
+\end{enumerate}
+The laser method in Step \ref{step3} is a tool introduced by Strassen~\cite{strassenlaser1} for converting Kronecker powers of tensors into direct sums of matrix multiplication tensors. All improvements since Coppersmith and Winograd's algorithm have used this approach~\cite{stothers,virgi12,LeGall32power,AlmanW21,duan2023,VXXZ24}, focusing on improving the use of the laser method to yield a \emph{larger} direct sum $S$ of \emph{larger} matrix multiplication tensors, and this is the step which we improve here as well.
+The laser method is a general tool which applies to any tensor $T$ that has been partitioned in a particular way. Let us first introduce some relevant notations.
+
+Suppose $T$ is a tensor over $X,Y,Z$, and we partition $X = \bigsqcup_i X_i$, $Y = \bigsqcup_j Y_j$, and $Z = \bigsqcup_k Z_k$ and define the subtensor $T_{i,j,k}$ as $T$ restricted to $X_i, Y_j, Z_k$. Thus, $T$ is partitioned as $T = \sum_{i,j,k} T_{i,j,k}$. The laser method requires this partition to have additional structure\footnote{Namely, there must be an integer $p$ such that $T_{i,j,k} = 0$ whenever $i+j+k \neq p$. In the case of $\CW_q$, we will use a partition with $p=2$.} which we will not focus on in this overview. Notably, when we take a Kronecker power $T^{\otimes n}$, which is a tensor over $X^n, Y^n, Z^n$, this can also be partitioned as $T^{\otimes n} = \sum_{I,J,K} T_{IJK}$ where $I,J,K$ are vectors of length $n$, and $T_{IJK} \defeq \bigotimes_{\ell=1}^n T_{I_\ell, J_\ell, K_\ell}$ is a tensor over $X_I := \prod_{\ell=1}^n X_{I_\ell}$, $Y_J := \prod_{\ell=1}^n Y_{J_\ell}$, and $Z_K := \prod_{\ell=1}^n Z_{K_\ell}$.
+
+Consider a probability distribution $\alpha$ on the subtensors of $T$, which assigns probability $\alpha_{ijk}$ to subtensor $T_{i,j,k}$. In the Kronecker power $T^{\otimes n}$, we can zero out according to the \emph{marginals} of $\alpha$. For instance, we zero out $X_I \subset X^n$ unless, for all $i$, we have $\frac{1}{n} \cdot |\{ \ell \in [n] \mid I_\ell = i\}| = \sum_{j,k} \alpha_{ijk}$. Assuming $\alpha$ is uniquely determined by its marginals (which is often not the case, as we will discuss more later), this means $T^{\otimes n}$ has been zeroed out so that every remaining $T_{IJK}$ is a copy (up to permutation of indices) of the tensor $B = \bigotimes_{i,j,k} T_{i,j,k}^{\otimes \alpha_{ijk} \cdot n}$.
+
+Summarizing, we have so far zeroed out $T^{\otimes n}$ into a sum of many copies of the tensor $B$ (one copy of $B$ from each $T_{IJK}$). However, this is not a direct sum. Indeed, for example, there can be many remaining $T_{IJK}$ and $T_{I'J'K'}$ with $I = I'$, which both use $X_I$. 
+
+The main result of the laser method is that a further, carefully-chosen zeroing out can result in a \emph{direct} sum of copies of the tensor $B$, where each two remaining $T_{IJK}$ and $T_{I'J'K'}$ have $I \neq I'$, $J \neq J'$, and $K \neq K'$. Moreover, this further zeroing out only removes a small number of $X_I, Y_J, Z_K$, so that a large number of copies of $B$ remain. (The exact number is a combinatorial expression in terms of the marginals of $\alpha$ which we will discuss in more detail in later sections.)
+
+When this method is applied to $\CW_q$, each subtensor is in fact a matrix multiplication tensor, so $B$ is also a matrix multiplication tensor. Thus, the output of the laser method can be directly given to the asymptotic sum inequality.
+
+\subsection{Recursive Applications of the Laser Method to Tensor Powers of \texorpdfstring{\boldmath $\CW_q$}{CWq}}
+
+Coppersmith and Winograd \cite{cw90} then noticed that the laser method can yield improved results when applied to the Kronecker square, $\CW_q^{\otimes 2}$. 
+
+Roughly speaking, the intuition is that the square gives us more freedom to pick the partition that is needed to apply the laser method, since Kronecker squares of the partitions of $\CW_q$ correspond to only a subset of the possible partitions of $\CW_q^{\otimes 2}$.  
+Coppersmith and Winograd take advantage of this, and pick a partition of $\CW_q^{\otimes 2}$ which allows the tensors $T_{IJK}$ to become larger. 
+In fact, compared to the partition obtained from analyzing  $\CW_q^{\otimes 2n}$, the partition from analyzing  $(\CW_q^{\otimes 2})^{\otimes n}$ is a \emph{coarsening} of the previous partition (where, for instance, each $X_I$ now is a union of possibly multiple previous $X_I$'s). Thus, $T_{IJK}$, which is a tensor over the variable blocks $X_I, Y_J, Z_K$, is now larger. 
+If the tensors $T_{IJK}$'s were all matrix multiplication tensors, then the asymptotic sum inequality tends to give better bounds when they are larger. 
+However, in this new partition, each subtensor is no longer a matrix multiplication tensor. In other words, the laser method still yields a direct sum of copies of $B = \bigotimes_{i,j,k} T_{i,j,k}^{\otimes \alpha_{ijk} \cdot n}$, but $B$ is not a matrix multiplication tensor, so the asymptotic sum inequality cannot be directly applied. 
+
+Coppersmith and Winograd solved this by applying the laser method \emph{recursively}. They first applied the laser method to each subtensor $T_{i,j,k}$ which is not a matrix multiplication tensor, showing that $T_{i,j,k}^{\otimes m}$ for large $m$ can zero out into direct sums of matrix multiplication tensors. Then, since the tensor $B$ is a Kronecker product of such powers, this can be used to zero out into a direct sum of matrix multiplication tensors.
+
+The next few improvements to $\omega$ \cite{stothers,virgi12,LeGall32power} applied this recursive laser method approach to $\CW_q^{\otimes 2^{\lvl-1}}$ for larger and larger integers $\lvl \ge 1$. Similar to before, there is a natural partition $X = \bigsqcup_i X_i$, $Y = \bigsqcup_j Y_j$, and $Z = \bigsqcup_k Z_k$ of the variables from the base tensor $\CW_q^{\otimes 2^{\lvl-1}}$, and products of $X_i$'s, $Y_j$'s or $Z_k$'s form subsets of variables $X_I$'s, $Y_J$'s, or $Z_K$'s in $(\CW_q^{\otimes 2^{\lvl-1}})^{\otimes n}$. We will call each subset of variables $X_I, Y_J, Z_K$ a \emph{level-$\lvl$ variable block} and we call a subtensor obtained from restricting to some level-$\ell$ variable blocks a \emph{level-$\ell$ subtensor}. Since the level-$\ell$ partition is a coarsening of the level-$(\ell-1)$ partition, each level-$\lvl$ variable block is the union of possibly many level-$(\lvl-1)$ variable blocks induced by the natural partition of $\CW_q^{\otimes 2^{\lvl-2}}$, and consequently each level-$\ell$ subtensor is the sum of many level-$(\ell-1)$ subtensors.
+As $\lvl$ increases, the task of applying the laser method to increasingly more intricate subtensors becomes more difficult, and significant algorithmic and computational challenges arise. 
+
+The next improvement~\cite{AlmanW21} focused on the case when the marginals of $\alpha$ do not uniquely determine $\alpha$. In this case, there is a corresponding penalty that reduces the number of copies of $B$ the laser method can achieve, and~\cite{AlmanW21} showed a new approach to reduce this penalty.
+
+
+\subsection{Asymmetry and Combination Loss}
+
+All improvements to the laser method thus far would apply equally well to any tensor with an appropriate partition. 
+The next, recently improved algorithm~\cite{duan2023} focused on improving the recursive use of the laser method specifically when it is applied to the Coppersmith-Winograd tensor $\CW_q$ in the recursive fashion described above.
+
+The key observation, referred to as ``combination loss'' in their paper, is as follows. Above, in order to ensure that the laser method gave a direct sum of copies of $B$, previous works ensured that any two remaining level-$\ell$ subtensors do not share any level-$\ell$ variable blocks $X_I$, $Y_J$ or $Z_K$. For $\ell = 1$, namely when the laser method is applied to the first power of $\CW_q$, this is both necessary and sufficient, because the level-$1$ subtensors are matrix multiplication tensors which use the entire level-1 variable blocks, so any two sharing an $I$, $J$, or $K$ must intersect.
+
+However, for $\ell > 1$, the laser method needs to be applied recursively to every level-$k$ subtensor for $k = \ell,\,\ell\!-\!1,\dots, 1$. This means that by the end of the algorithm, we are potentially only using a small fraction of the variables in the level-$\ell$ subtensor rather than the entire subtensor. So it is possible that even if two level-$\ell$ subtensors $T_{IJK}$ and $T_{I'J'K}$ share the same level-$\ell$ $Z$-variable block $Z_K$ in the beginning, after recursive applications of the laser method, the subtensors of $T_{IJK}$ and $T_{I'J'K}$ which remain after zeroing out into matrix multiplication tensors may use disjoint subsets of $Z_K$, i.e., they may be independent. In this case, we could keep both $T_{IJK}$ and $T_{I'J'K}$ when we apply the laser method to $\CW_q^{\otimes 2^{\ell-1}}$ and still have a direct sum of subtensors, contrary to what was done in the previous algorithms where only one could be kept.
+
+In order to benefit from this observation, one major issue is that when $T_{IJK}$ and $T_{I'J'K}$ are each zeroed out to their desired subtensors via the recursive applications of the laser method, they may each zero out parts of $Z_K$ that are meant to be used by the other. Thus it is unclear how to control and analyze the recursive procedure so that we maximize the number of these subtensors remaining in the end while ensuring that they are indeed independent.
+
+However, for the $\CW_q$ tensor, Duan, Wu, and Zhou in \cite{duan2023} observed that the issue can be partially overcome. In particular, they were able to allow two level-$\ell$ subtensors to share level-$\ell$ variable blocks in the $Z$-dimension as long as they had the guarantee that any two level-$\ell$ subtensors do not share any level-$\ell$ blocks in the $X$- or $Y$-dimension. Due to the special structure of the $\CW_q$ tensor, it turns out that by ensuring independence among level-$\ell$ $X$- and $Y$-blocks, we can obtain sufficient information about the level-$(\ell-1)$ structure of $Z$-blocks in level-$\ell$ subtensors.
+Therefore, by introducing asymmetry via treating the $Z$-variables differently from the $X$- and $Y$-variables, \cite{duan2023} obtained a procedure that obtains a collection of level-$\ell$ subtensors that do not share any level-$(\ell-1)$ $Z$-variable blocks, so they are independent. The follow-up work~\cite{VXXZ24} further generalized the techniques presented in \cite{duan2023} and allowed the sharing of level-$(\ell-1)$ $Z$-variable blocks. In fact, their approach only requires that each level-$1$ $Z$-variable block belongs to a unique remaining level-$\ell$ subtensor $T_{IJK}$. This allowed them to obtain an improvement since each subtensor $T_{IJK}$ can use a more ``fine-grained'' subset of $Z$-variables.
+
+
+
+
+
+
+
+
+
+A priori, it is perhaps surprising that such an asymmetric approach, applied to the very symmetric Coppersmith-Winograd tensor, leads to an improved algorithm. In previous work, much effort was devoted to ensuring that the algorithm was entirely symmetric with respect to the $X,Y,Z$-dimensions. For instance, many intermediate steps of the laser method require taking the \emph{minimum} of three quantities depending separately on $X,Y,Z$ (like the entropies of the three marginal distributions of $\alpha$), and picking a symmetric distribution prevents losses in these steps. Similarly, in the design of algorithms for \emph{rectangular} matrix multiplication using the laser method~\cite{legallrect,legallrect2,VXXZ24}, one seems to truly suffer a penalty due to the necessary asymmetry. (For a rough comparison, symmetrizing the best rectangular matrix multiplication algorithms leads to a substantially worse square matrix multiplication algorithm.) However, the gains from the approach above ultimately outweigh the losses from asymmetry.
+
+\subsection{Our Contributions: More Asymmetry}
+
+Following from the sequence of improvements obtained by \cite{duan2023,VXXZ24}, the natural end goal for this line of work is to allow different remaining subtensors to share level-$\lvl$ variable blocks in all three dimensions, and only require level-$1$ variable blocks to belong to unique remaining level-$\ell$ subtensors. However, it is unclear how one may achieve this goal since the algorithms of both  \cite{duan2023} and \cite{VXXZ24} crucially use the fact that different remaining level-$\ell$ subtensors use unique level-$\lvl$ $X$- and $Y$-variable blocks. In this work, we make substantial progress toward this goal by allowing different remaining subtensors to share level-$\lvl$ variable blocks in both the $Y$- and $Z$-dimensions.
+
+In this work, we give a new approach in which we \emph{only} require that any two level-$\ell$ subtensors do not share level-$\ell$ $X$-blocks. In particular, two level-$\ell$ subtensors can share the same level-$\ell$ $Y$-variable block or $Z$-variable block, but cannot share the same level-$1$ $Y$-variable block or $Z$-variable block, strengthening ideas in \cite{VXXZ24}. In this way, we are able to keep a larger number of level-$\ell$ subtensors and thus zero out the input $\CW_q^{\otimes 2^{\ell-1}}$ into more matrix multiplication tensors. This is achieved by introducing more asymmetry into our procedure: we now give a different zeroing-out procedure for each of the $X,Y,Z$-dimensions. This is perhaps unexpected, because in the end goal all $X$-, $Y$-, $Z$-dimensions have the same requirement that every level-$1$ variable block belongs to unique remaining level-$\ell$ subtensors. One might expect that a more symmetric implementation of the ideas of prior work would help towards the goal, but we instead use more asymmetry to get around a major limitation of the prior work.
+
+Compared to the prior works, which use constrained information from both the $X$- and $Y$-dimensions to control the $Z$-dimension, we first use just the $X$-dimension to partially control the $Y$-dimension, and then use both the fully-controlled $X$-dimension and partially-controlled $Y$-dimension to control the $Z$-dimension. More specifically, by utilizing more structure specific to the  $\CW_q$ tensor, combined with the requirement that each level-$\ell$ subtensor $T_{IJK}$ uses a unique level-$\ell$ $X$-block, we find that this already constrains $T_{IJK}$ to use a smaller and more structured subset of level-$1$ $Y$-blocks, which is sufficient to perform zero-outs over level-$1$ $Y$-blocks so that each of them is contained in a unique level-$\ell$ subtensor. After obtaining a set of level-$\ell$ subtensors that do not share any level-$\ell$ $X$-blocks or level-$1$ $Y$-blocks, we then have enough information to do zero-outs over level-$1$ $Z$-blocks so that each of them are contained in a unique level-$\ell$ subtensor. See \cref{sec:outline} for a more detailed overview of our algorithm.
+
+Similar to recent prior matrix multiplication algorithms, we need to solve a large, non-convex optimization problem in order to determine parameters for the laser method to achieve the best exponent. 
+That said, we can already see that our new approach could potentially lead to an improvement without solving the optimization program to get the final bound for $\omega$. A key parameter that reflects the effectiveness of the laser method is the hash modulus being used in the hashing step standard to all applications of the laser method, which determines the number of remaining level-$\ell$ subtensors we are able to keep in expectation. Minimizing the value of this hash modulus can give an improvement to the bound we are able to obtain for $\omega$. The new hash modulus we use in this work is taken to be (ignoring low-order terms)
+\[
+\max\left\{\frac{\numtriple}{\numxblock},  
+\frac{\numalpha \cdot \pcompY}{\numyblock}, 
+\frac{\numalpha \cdot \pcompZ}{\numzblock}\right\},
+\]
+in comparison with the following value (similarly without low-order terms) used in \cite{VXXZ24}
+\[
+\max\left\{\frac{\numtriple}{\numxblock},  
+\frac{\numtriple}{\numyblock}, 
+\frac{\numalpha \cdot \pcompZ}{\numzblock}\right\}. 
+\]
+The definitions of all the variables in these expressions are not important for the purpose of this overview, and we focus instead on their structure.  
+Two out of the three terms in the two bounds are the same, but we have improved the middle term from $\frac{\numtriple}{\numyblock}$ to $\frac{\numalpha \cdot \pcompY}{\numyblock}$, where $\pcompY$ is a variable between $0$ and $1$ which we can pick in our optimization problem. In fact, even in the worst case $\pcompY = 1$, we improve the second term by a factor of $\numtriple/\numalpha$, which is guaranteed to be at least $1$ and is exactly the penalty term studied by \cite{AlmanW21}.  Thus, even if we pick $\pcompY = 1$, we would at least recover the modulus of prior work. That said, since the modulus is defined by taking the maximum over the three values, it is not immediately clear that our approach uses a strictly smaller modulus. 
+However, by solving the new constraint program,
+one can verify that even in $\CW_q^{\otimes 2}$, the optimal parameters use a smaller value of $\pcompY$, which leads to a better bound on $\omega$. Indeed, our new approach gives a better analysis of $\CW_q^{\otimes 2}$ than prior work, improving from the bound $\omega < 2.374399$ achieved by~\cite{duan2023}\footnote{The subsequent work~\cite{VXXZ24} improves the analysis of higher powers of $\CW_q$ but not the square.} to  $\omega < 2.37432$. 
+
+
+
+
+
+
+\subsection{Limitations to Our Techniques}
+
+
+In our approach, we successfully allow all obtained level-$\ell$ subtensors to share level-$k$ variable blocks for any $1<k\leq \ell$ in both the $Y$- and $Z$-dimensions, as long as they are independent with respect to the level-$1$ blocks. However, we still require that none of them share  level-$\ell$ $X$-blocks. In an ideal approach, to truly maximize the number of independent tensors, the subtensors should also be allowed to share level-$\ell$ $X$-blocks as long as they do not share level-$1$ $X$-blocks. 
+However, there does not seem to be a way to continue our approach to also allow the $X$ blocks to share level-$\ell$-blocks. Our approach crucially uses the fact that a level-$\ell$ $X$-block uniquely determines the level-$\ell$ subtensor that it belongs in, to control the structure of level-$1$ blocks in level-$\ell$ subtensors. It seems that a truly new idea is needed to be able to control this structure without making the level-$\ell$ subtensors to have unique level-$\ell$ variable blocks in one of the dimensions. In other words, we believe that we have reached the limit of generalizing the techniques introduced in \cite{duan2023}.
+
+
+
+
+
+Second, as in all recent improvements, determining the final running time of our matrix multiplication algorithm requires solving a non-convex optimization problem to determine the best choice of the probability distribution $\alpha$ to use in the laser method. Since we can no longer use a symmetry between the $X$- and $Y$-dimensions, our new optimization problem has more variables and appears to be considerably harder to solve to high precision than the problems in prior work. It would be particularly exciting to find an approach to improving $\omega$ which does not need powerful optimization software and computing systems.
